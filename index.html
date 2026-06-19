@@ -20,6 +20,10 @@
     --nampo-soft:#EFE9FB;
     --centum:#0E9488;
     --centum-soft:#E2F6F3;
+    --ticket:#D97B1F;
+    --ticket-soft:#FBEEDB;
+    --cafe:#DC2626;
+    --cafe-soft:#FCE4E4;
     --shadow: 0 8px 28px rgba(20,20,30,0.10), 0 1px 3px rgba(20,20,30,0.06);
   }
 
@@ -107,6 +111,30 @@
   }
   .distance-badge b{ color:var(--text); font-size:13px; }
 
+  .ticket-toggle{
+    pointer-events:auto;
+    display:flex; align-items:center; gap:6px;
+    cursor:pointer;
+    background:var(--surface); backdrop-filter:blur(10px);
+    border:1px solid var(--border); border-radius:999px;
+    padding:8px 14px; box-shadow:var(--shadow);
+    font-size:12.5px; font-weight:600; color:var(--text-muted);
+    transition:background .18s, color .18s, border-color .18s;
+    white-space:nowrap;
+  }
+  .ticket-toggle .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--ticket); flex:none;
+  }
+  .ticket-toggle.active{
+    background:var(--ticket); color:#fff; border-color:var(--ticket);
+  }
+  .ticket-toggle.active .dot{ background:#fff; }
+  .ticket-hint{
+    font-size:10.5px; color:var(--text-muted); margin:0;
+    text-align:right; max-width:200px;
+  }
+
   /* ---------- venue panel ---------- */
   .panel{
     position:absolute; left:16px; bottom:16px;
@@ -143,10 +171,15 @@
   }
   .venue-row[data-district="nampo"] .venue-num{ background:var(--nampo); }
   .venue-row[data-district="centum"] .venue-num{ background:var(--centum); }
-  .venue-name-kr{ font-size:13px; font-weight:600; line-height:1.35; }
+  .venue-name-kr{ font-size:13px; font-weight:600; line-height:1.35; display:flex; align-items:center; gap:5px; }
   .venue-name-en{ font-size:11px; color:var(--text-muted); margin-top:1px; }
+  .row-ticket-dot{
+    width:6px; height:6px; border-radius:50%; background:var(--ticket); flex:none;
+  }
 
   /* ---------- leaflet marker ---------- */
+  .venue-marker-wrap{ position:relative; width:30px; height:30px; }
+  .venue-marker-wrap.dim{ opacity:0.28; }
   .venue-marker{
     width:30px; height:30px; border-radius:50%;
     border:2.5px solid #fff;
@@ -157,10 +190,28 @@
   }
   .venue-marker--nampo{ background:var(--nampo); }
   .venue-marker--centum{ background:var(--centum); }
-  .venue-marker.dim{ opacity:0.28; }
+  .ticket-pin-badge{
+    position:absolute; top:-5px; right:-5px;
+    width:15px; height:15px; border-radius:50%;
+    background:var(--ticket); border:2px solid #fff;
+    display:flex; align-items:center; justify-content:center;
+    font-size:8px; line-height:1;
+  }
+
+  .cafe-dot{
+    width:26px; height:26px; border-radius:50%;
+    background:var(--cafe); border:3px solid #fff;
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  }
+  .leaflet-tooltip.cafe-tooltip{
+    font-family:'Pretendard', sans-serif; font-size:11px;
+    background:var(--text); color:#fff; border:none;
+    padding:5px 9px; border-radius:8px; box-shadow:var(--shadow);
+  }
+  .leaflet-tooltip.cafe-tooltip::before{ border-top-color:var(--text); }
 
   .leaflet-popup-content-wrapper{ border-radius:14px; box-shadow:var(--shadow); }
-  .popup{ font-family:'Pretendard', sans-serif; min-width:180px; }
+  .popup{ font-family:'Pretendard', sans-serif; min-width:200px; max-width:250px; }
   .popup .district-tag{
     display:inline-block; font-family:'JetBrains Mono', monospace;
     font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
@@ -171,12 +222,37 @@
   .popup .name-kr{ font-size:14px; font-weight:700; margin:0 0 1px; }
   .popup .name-en{ font-size:11.5px; color:var(--text-muted); margin:0 0 6px; }
   .popup .addr{ font-size:11.5px; color:var(--text); line-height:1.4; }
+  .popup .tb-block{ margin-top:9px; padding-top:8px; border-top:1px dashed var(--border); }
+  .popup .tb-title{
+    font-size:10.5px; font-weight:700; color:var(--ticket); margin:0 0 5px;
+    letter-spacing:0.01em;
+  }
+  .popup .tb-row{ margin-bottom:6px; }
+  .popup .tb-row:last-child{ margin-bottom:0; }
+  .popup .tb-loc{ font-size:11.5px; font-weight:600; color:var(--text); }
+  .popup .tb-meta{ font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-muted); margin-top:1px; }
+  .popup .tb-note{ font-size:10.5px; color:var(--ticket); margin-top:1px; }
+
+  .popup .cafe-block{ margin-top:9px; padding-top:8px; border-top:1px dashed var(--border); }
+  .popup .cafe-title{
+    font-size:10.5px; font-weight:700; color:var(--cafe); margin:0 0 5px;
+  }
+  .popup .cafe-row{
+    display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+    font-size:11.5px; margin-bottom:3px;
+  }
+  .popup .cafe-row:last-child{ margin-bottom:0; }
+  .popup .cafe-name{ color:var(--text); flex:1 1 auto; line-height:1.3; }
+  .popup .cafe-meta{
+    flex:none; font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-muted);
+  }
 
   @media (max-width:560px){
     .brand{ max-width:200px; padding:10px 14px; }
     .brand h1{ font-size:15px; }
     .panel{ width:calc(100% - 32px); max-height:38vh; }
     .toggle button{ padding:7px 10px; font-size:11.5px; }
+    .ticket-hint{ display:none; }
   }
 </style>
 </head>
@@ -189,6 +265,7 @@
     <p class="eyebrow">BIFF 2025 · VENUE MAP</p>
     <h1>부산국제영화제 행사장 지도</h1>
     <p>남포동 · 센텀시티 두 거점의 11개 행사장</p>
+    <p style="margin-top:4px;">☕ 마커 클릭 시 도보 10분 이내 카페를 지도에 점으로 표시</p>
   </div>
   <div class="controls">
     <div class="toggle">
@@ -196,6 +273,8 @@
       <button data-d="nampo">남포동</button>
       <button data-d="centum">센텀시티</button>
     </div>
+    <div class="ticket-toggle" id="ticketToggle"><span class="dot"></span>현장 매표소만</div>
+    <p class="ticket-hint">🎫 표시 = 임시 현장 매표소 운영 장소 (9/17~9/26 중, 장소별 기간 다름)</p>
     <div class="distance-badge">두 거점 간 거리 &nbsp;<b id="distVal">–</b></div>
   </div>
 </div>
@@ -230,6 +309,53 @@
     { id:11, district:'centum', num:7, kr:'동서대 소향씨어터 신한카드홀', en:'Dongseo Univ. Sohyang Theatre', lat:35.172832, lng:129.127731, addr:'부산 해운대구 센텀중앙로 55' },
   ];
 
+  // 현장 매표소 운영 안내 (장소별로 1개 또는 여러 개 운영 지점)
+  const TICKETBOX = {
+    1:  [{ loc:'4층 매표소',       period:'9/18(목) ~ 9/21(일)', hours:'09:00 ~ 20:00', pay:'카드, 현금', note:null }],
+    5:  [
+          { loc:'야외매표소',      period:'9/17(수) ~ 9/26(금)', hours:'08:30 ~ 20:30', pay:'카드, 현금', note:'9/17은 예매 발권만' },
+          { loc:'시네마운틴 6층', period:'9/18(목) ~ 9/26(금)', hours:'08:30 ~ 20:30', pay:'카드, 현금', note:'9/26은 15:00까지' }
+        ],
+    6:  [{ loc:'7층 매표소',       period:'9/18(목) ~ 9/25(목)', hours:'08:30 ~ 20:30', pay:'카드, 현금', note:null }],
+    7:  [{ loc:'8층 매표소',       period:'9/18(목) ~ 9/25(목)', hours:'08:30 ~ 20:30', pay:'카드, 현금', note:null }],
+    8:  [{ loc:'1층 매표소',       period:'9/18(목) ~ 9/25(목)', hours:'08:30 ~ 20:30', pay:'카드, 현금', note:null }],
+    9:  [{ loc:'2층 매표소',       period:'9/18(목) ~ 9/25(목)', hours:'08:30 ~ 20:30', pay:'카드, 현금', note:null }],
+    11: [{ loc:'매표소',           period:'9/18(목) ~ 9/24(수)', hours:'08:30 ~ 20:30', pay:'카드, 현금', note:null }],
+  };
+
+  // 행사장 기준 도보 10분 이내 평점 높은 카페 (예시 추천, 4~5곳)
+  const CAFES = {
+    1:  [ ['아브라함커피 남포점',5.0,3], ['광복동12시',4.9,4], ['Cafe Nampo Yunseul',4.9,3], ['Anavrin',4.8,5], ['Ryuis Coffee Bar',4.8,1] ],
+    2:  [ ['아브라함커피 남포점',5.0,3], ['광복동12시',4.9,5], ['Cafe Nampo Yunseul',4.9,5], ['Anavrin',4.8,7], ['Ryuis Coffee Bar',4.8,2] ],
+    3:  [ ['아브라함커피 남포점',5.0,8], ['광복동12시',4.9,7], ['Cafe Nampo Yunseul',4.9,4], ['Anavrin',4.8,3], ['Regular House',4.6,4] ],
+    4:  [ ['아브라함커피 남포점',5.0,2], ['광복동12시',4.9,2], ['Cafe Nampo Yunseul',4.9,2], ['Anavrin',4.8,2], ['Ryuis Coffee Bar',4.8,3] ],
+    5:  [ ['노스커피 리마스터 센텀인텔리움점',5.0,4], ['Small Good Coffee',5.0,5], ['신세계 태양커피',4.9,2], ['NOHS COFFEE Remasterd',4.6,8], ['Paul Bassett 센텀',4.3,2] ],
+    6:  [ ['노스커피 리마스터 센텀인텔리움점',5.0,7], ['Small Good Coffee',5.0,5], ['신세계 태양커피',4.9,2], ['NOHS COFFEE Remasterd',4.6,3], ['파스쿠찌 센텀시티점',4.6,4] ],
+    7:  [ ['노스커피 리마스터 센텀인텔리움점',5.0,6], ['Small Good Coffee',5.0,4], ['신세계 태양커피',4.9,3], ['NOHS COFFEE Remasterd',4.6,4], ['파스쿠찌 센텀시티점',4.6,5] ],
+    8:  [ ['Small Good Coffee',5.0,1], ['노스커피 리마스터 센텀인텔리움점',5.0,2], ['신세계 태양커피',4.9,4], ['NOHS COFFEE Remasterd',4.6,8], ['Paul Bassett 센텀',4.3,4] ],
+    9:  [ ['노스커피 리마스터 센텀인텔리움점',5.0,4], ['Small Good Coffee',5.0,6], ['신세계 태양커피',4.9,4], ['Paul Bassett 센텀',4.3,4], ['일리카페 부산센텀점',4.3,7] ],
+    10: [ ['노스커피 리마스터 센텀인텔리움점',5.0,4], ['Small Good Coffee',5.0,5], ['신세계 태양커피',4.9,4], ['Paul Bassett 센텀',4.3,3], ['Coffee Smith 센텀',4.0,2] ],
+    11: [ ['노스커피 리마스터 센텀인텔리움점',5.0,2], ['Small Good Coffee',5.0,4], ['신세계 태양커피',4.9,4], ['Paul Bassett 센텀',4.3,4], ['Coffee Smith 센텀',4.0,1] ],
+  };
+
+  // 카페 이름 -> 좌표 (여러 행사장에서 같은 카페가 재사용되므로 공유 테이블로 관리)
+  const CAFE_COORDS = {
+    '아브라함커피 남포점':              [35.0989099,129.0313234],
+    '광복동12시':                      [35.0994887,129.0320857],
+    'Cafe Nampo Yunseul':             [35.1010527,129.0290400],
+    'Anavrin':                        [35.1019067,129.0299915],
+    'Ryuis Coffee Bar':               [35.0989024,129.0293709],
+    'Regular House':                  [35.1013452,129.0301173],
+    '노스커피 리마스터 센텀인텔리움점':    [35.1736775,129.1292105],
+    'Small Good Coffee':              [35.1724700,129.1310106],
+    '신세계 태양커피':                  [35.1700157,129.1285211],
+    'NOHS COFFEE Remasterd':          [35.1673702,129.1321008],
+    'Paul Bassett 센텀':                [35.1702219,129.1284896],
+    '파스쿠찌 센텀시티점':              [35.1664176,129.1320344],
+    '일리카페 부산센텀점':              [35.1766622,129.1250648],
+    'Coffee Smith 센텀':               [35.1727935,129.1279005],
+  };
+
   // ---------- map setup ----------
   const map = L.map('map', { zoomControl:false, attributionControl:true }).setView([35.135, 129.078], 12);
   L.control.zoom({ position:'bottomright' }).addTo(map);
@@ -238,11 +364,57 @@
     attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
+  function ticketSection(v){
+    const tb = TICKETBOX[v.id];
+    if(!tb) return '';
+    const rows = tb.map(t => `
+      <div class="tb-row">
+        <div class="tb-loc">${t.loc}</div>
+        <div class="tb-meta">${t.period} · ${t.hours} · ${t.pay}</div>
+        ${t.note ? `<div class="tb-note">${t.note}</div>` : ''}
+      </div>
+    `).join('');
+    return `<div class="tb-block"><p class="tb-title">🎫 현장 매표소 운영 (임시)</p>${rows}</div>`;
+  }
+
+  function cafeSection(v){
+    const cafes = CAFES[v.id];
+    if(!cafes) return '';
+    const rows = cafes.map(([name,rating,min]) => `
+      <div class="cafe-row">
+        <span class="cafe-name">${name}</span>
+        <span class="cafe-meta">★${rating.toFixed(1)} · 도보${min}분</span>
+      </div>
+    `).join('');
+    return `<div class="cafe-block"><p class="cafe-title">☕ 도보 10분 이내 카페 (평점순, 예시)</p>${rows}</div>`;
+  }
+
+  // ---------- cafe dot markers (shown while a venue popup is open) ----------
+  const cafeLayer = L.layerGroup().addTo(map);
+  function showCafeDots(v){
+    cafeLayer.clearLayers();
+    const cafes = CAFES[v.id];
+    if(!cafes) return;
+    cafes.forEach(([name,rating,min]) => {
+      const coord = CAFE_COORDS[name];
+      if(!coord) return;
+      L.marker(coord, {
+        icon: L.divIcon({ className:'', html:'<div class="cafe-dot"></div>', iconSize:[26,26], iconAnchor:[13,13] })
+      })
+      .bindTooltip(`☕ ${name} · ★${rating.toFixed(1)} · 도보${min}분`, { className:'cafe-tooltip', direction:'top', offset:[0,-8] })
+      .addTo(cafeLayer);
+    });
+  }
+
   const markers = {};
   VENUES.forEach(v => {
+    const hasTicket = !!TICKETBOX[v.id];
     const icon = L.divIcon({
       className: '',
-      html: `<div class="venue-marker venue-marker--${v.district}">${v.num}</div>`,
+      html: `<div class="venue-marker-wrap">
+               <div class="venue-marker venue-marker--${v.district}">${v.num}</div>
+               ${hasTicket ? '<div class="ticket-pin-badge">🎫</div>' : ''}
+             </div>`,
       iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-14]
     });
     const m = L.marker([v.lat, v.lng], { icon }).addTo(map);
@@ -252,8 +424,12 @@
         <p class="name-kr">${v.kr}</p>
         <p class="name-en">${v.en}</p>
         <p class="addr">${v.addr}</p>
+        ${ticketSection(v)}
+        ${cafeSection(v)}
       </div>
     `);
+    m.on('popupopen', () => showCafeDots(v));
+    m.on('popupclose', () => cafeLayer.clearLayers());
     markers[v.id] = m;
   });
 
@@ -273,10 +449,15 @@
   const centumC = centroid(VENUES.filter(v=>v.district==='centum'));
   document.getElementById('distVal').textContent = haversine(nampoC, centumC).toFixed(1)+' km';
 
-  // ---------- bounds per district ----------
-  function boundsFor(district){
-    const list = district==='all' ? VENUES : VENUES.filter(v=>v.district===district);
-    return L.latLngBounds(list.map(v=>[v.lat,v.lng]));
+  // ---------- bounds per filter ----------
+  function visibleList(district, ticketOnly){
+    let list = district==='all' ? VENUES : VENUES.filter(v=>v.district===district);
+    if(ticketOnly) list = list.filter(v=>TICKETBOX[v.id]);
+    return list;
+  }
+  function boundsFor(district, ticketOnly){
+    const list = visibleList(district, ticketOnly);
+    return L.latLngBounds((list.length?list:VENUES).map(v=>[v.lat,v.lng]));
   }
 
   // ---------- panel ----------
@@ -284,15 +465,16 @@
   const panelTitle = document.getElementById('panelTitle');
   const panelCount = document.getElementById('panelCount');
 
-  function renderPanel(district){
-    const list = district==='all' ? VENUES : VENUES.filter(v=>v.district===district);
-    panelTitle.textContent = district==='all' ? '전체 행사장' : DISTRICTS[district].label.split(' ')[0]+' 행사장';
+  function renderPanel(district, ticketOnly){
+    const list = visibleList(district, ticketOnly);
+    const districtLabel = district==='all' ? '전체' : DISTRICTS[district].label.split(' ')[0];
+    panelTitle.textContent = ticketOnly ? districtLabel+' · 매표소 운영' : districtLabel+' 행사장';
     panelCount.textContent = list.length+'곳';
     panelList.innerHTML = list.map(v=>`
       <div class="venue-row" data-district="${v.district}" data-id="${v.id}">
         <div class="venue-num">${v.num}</div>
         <div>
-          <div class="venue-name-kr">${v.kr}</div>
+          <div class="venue-name-kr">${v.kr}${TICKETBOX[v.id] ? '<span class="row-ticket-dot"></span>' : ''}</div>
           <div class="venue-name-en">${v.en}</div>
         </div>
       </div>
@@ -308,22 +490,38 @@
 
   // ---------- toggle ----------
   const toggleBtns = document.querySelectorAll('.toggle button');
-  function setDistrict(district){
-    toggleBtns.forEach(b=>b.classList.toggle('active', b.dataset.d===district));
+  const ticketToggleEl = document.getElementById('ticketToggle');
+  let currentDistrict = 'all';
+  let ticketOnly = false;
+
+  function applyView(){
     VENUES.forEach(v=>{
       const el = markers[v.id].getElement();
       if(!el) return;
-      const inner = el.querySelector('.venue-marker');
-      if(!inner) return;
-      inner.classList.toggle('dim', district!=='all' && v.district!==district);
+      const wrap = el.querySelector('.venue-marker-wrap');
+      if(!wrap) return;
+      const matches = (currentDistrict==='all' || v.district===currentDistrict)
+                       && (!ticketOnly || TICKETBOX[v.id]);
+      wrap.classList.toggle('dim', !matches);
     });
-    renderPanel(district);
-    map.flyToBounds(boundsFor(district), { padding:[80,80], duration:0.7, maxZoom:16 });
+    renderPanel(currentDistrict, ticketOnly);
+    map.flyToBounds(boundsFor(currentDistrict, ticketOnly), { padding:[80,80], duration:0.7, maxZoom:16 });
   }
-  toggleBtns.forEach(b=> b.addEventListener('click', ()=> setDistrict(b.dataset.d)));
+
+  toggleBtns.forEach(b => b.addEventListener('click', () => {
+    currentDistrict = b.dataset.d;
+    toggleBtns.forEach(x=>x.classList.toggle('active', x===b));
+    applyView();
+  }));
+
+  ticketToggleEl.addEventListener('click', () => {
+    ticketOnly = !ticketOnly;
+    ticketToggleEl.classList.toggle('active', ticketOnly);
+    applyView();
+  });
 
   // ---------- init ----------
-  setDistrict('all');
+  applyView();
 </script>
 
 </body>
