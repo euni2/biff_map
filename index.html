@@ -56,6 +56,23 @@
     display:flex; align-items:flex-start; justify-content:space-between;
     gap:12px;
     pointer-events:none;
+    opacity:1; transition:opacity .2s ease, visibility .2s ease;
+  }
+  .topbar.ui-hidden{ opacity:0; visibility:hidden; pointer-events:none; }
+
+  .ui-toggle-btn{
+    position:absolute; right:16px; bottom:128px; z-index:1001;
+    appearance:none; cursor:pointer;
+    display:flex; align-items:center; gap:6px;
+    background:var(--surface); backdrop-filter:blur(10px);
+    border:1px solid var(--border); border-radius:999px;
+    padding:8px 13px; box-shadow:var(--shadow);
+    font-family:'Pretendard', sans-serif; font-size:11.5px; font-weight:600; color:var(--text);
+    transition:background .15s;
+  }
+  .ui-toggle-btn:hover{ background:#fff; }
+  @media (max-width:560px){
+    .ui-toggle-btn{ bottom:150px; }
   }
   .brand{
     pointer-events:auto;
@@ -366,6 +383,42 @@
     display:inline-flex; align-items:center; gap:4px;
   }
 
+  /* ---------- venue card v2 header (avatar + breadcrumb style) ---------- */
+  .dc-hero2{
+    position:relative; padding:20px 16px 22px; text-align:center;
+    color:#fff; overflow:hidden;
+  }
+  .dc-hero2.theme-nampo{ background:linear-gradient(160deg,#2D2150 0%, var(--nampo) 55%, #4B36A0 100%); }
+  .dc-hero2.theme-centum{ background:linear-gradient(160deg,#0B3B38 0%, var(--centum) 55%, #0E6E63 100%); }
+  .dc-handle2{ width:36px; height:4px; border-radius:3px; background:rgba(255,255,255,0.4); margin:0 auto 14px; }
+  .dc-avatar-wrap{ position:relative; width:84px; height:84px; margin:0 auto 12px; }
+  .dc-avatar{
+    width:84px; height:84px; border-radius:50%; background:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:34px;
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+  }
+  .dc-avatar-badge{
+    position:absolute; right:-3px; bottom:-3px;
+    width:28px; height:28px; border-radius:50%;
+    background:var(--ticket); border:3px solid #fff;
+    display:flex; align-items:center; justify-content:center; font-size:12px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.25);
+  }
+  .dc-avatar-badge.no-ticket{ background:var(--text-muted); }
+  .dc-crumb{
+    font-size:11.5px; color:rgba(255,255,255,0.85); margin:0 0 4px;
+    cursor:pointer; display:inline-flex; align-items:center; gap:2px;
+  }
+  .dc-crumb:hover{ text-decoration:underline; }
+  .dc-title2{ font-size:18px; font-weight:700; margin:0 0 4px; }
+  .dc-subtitle2{ font-size:12px; color:rgba(255,255,255,0.78); margin:0 0 6px; }
+  .dc-quicklink{
+    font-size:11.5px; color:rgba(255,255,255,0.85); margin:0;
+    cursor:pointer; display:inline-flex; align-items:center; gap:2px;
+  }
+  .dc-quicklink:hover{ text-decoration:underline; }
+  .dc-flow{ padding:14px 16px 16px; }
+
   .dc-tabs{
     display:flex; background:var(--surface-solid); border-bottom:1px solid var(--border);
     position:sticky; top:0; z-index:2;
@@ -409,6 +462,37 @@
   }
   .info-row{ display:flex; gap:7px; font-size:12px; color:var(--text); line-height:1.4; }
   .info-row .icon{ flex:none; color:var(--text-muted); }
+
+  .sched-card{ background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:12px 14px; }
+  .sched-tabs{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .sched-tab{
+    appearance:none; cursor:pointer; font-size:11px; font-weight:700;
+    padding:5px 11px; border-radius:999px; border:1.5px solid var(--border);
+    background:#fff; color:var(--text-muted); transition:background .15s, border-color .15s, color .15s;
+  }
+  .sched-tab.active{ background:var(--centum); border-color:var(--centum); color:#fff; }
+  .sched-panel[hidden]{ display:none; }
+  .sched-row{
+    display:flex; gap:10px; align-items:baseline;
+    padding:7px 0; border-bottom:1px solid var(--border);
+  }
+  .sched-row:last-child{ border-bottom:none; }
+  .sched-time{
+    font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted);
+    flex:none; width:46px;
+  }
+  .sched-film{ font-size:12px; font-weight:600; color:var(--text); line-height:1.35; }
+
+  .tkt-card{ background:var(--ticket-soft); border:1px solid var(--ticket); border-radius:14px; padding:12px 14px; }
+  .tkt-head{ display:flex; align-items:center; gap:6px; margin-bottom:8px; }
+  .tkt-head .tkt-icon{ font-size:15px; }
+  .tkt-head .tkt-title{ font-size:12.5px; font-weight:700; color:#9C5A12; }
+  .tkt-row{ margin-bottom:7px; }
+  .tkt-row:last-child{ margin-bottom:0; }
+  .tkt-loc{ font-size:12px; font-weight:600; color:var(--text); }
+  .tkt-meta{ font-family:'JetBrains Mono', monospace; font-size:10.5px; color:#9C5A12; margin-top:1px; }
+  .tkt-note{ font-size:10.5px; color:#B36A14; margin-top:1px; }
+  .tkt-a11y{ font-size:10.5px; color:var(--centum); margin-top:8px; padding-top:8px; border-top:1px dashed rgba(217,123,31,0.35); }
 
   .cafe-carousel{
     display:flex; gap:8px; overflow-x:auto;
@@ -535,7 +619,7 @@
 
 <div id="map"></div>
 
-<div class="topbar">
+<div class="topbar" id="topbarUI">
   <div class="brand">
     <p class="eyebrow">BIFF 2025 · VENUE MAP</p>
     <h1>부산국제영화제 행사장 지도</h1>
@@ -575,6 +659,10 @@
     <div class="distance-badge">두 거점 간 거리 &nbsp;<b id="distVal">–</b></div>
   </div>
 </div>
+
+<button class="ui-toggle-btn" id="uiToggleBtn" title="지도 위 안내창·범례·옵션 표시/숨기기">
+  <span id="uiToggleIcon">🙈</span><span id="uiToggleLabel">UI 숨기기</span>
+</button>
 
 <div class="panel" id="panelOuter">
   <div class="panel-head" id="panelHead"></div>
@@ -664,6 +752,53 @@
     '파스쿠찌 센텀시티점':              [35.1664176,129.1320344],
     '일리카페 부산센텀점':              [35.1766622,129.1250648],
     'Coffee Smith 센텀':               [35.1727935,129.1279005],
+  };
+
+  // 남포동 4곳 + 센텀시티 7곳, 11개 행사장 전체의 스크린별 상영 스케줄 — 전부 가상 예시 데이터 (실제 상영작/시간표 아님)
+  // 상영관(venue) 1곳 안에 스크린(a/b/c)이 여러 개일 수 있고, 스크린마다 시간대별로 다른 영화가 배정됩니다.
+  const SCREENINGS = {
+    1: [ // 메가박스 부산극장 — 스크린 2개
+      { name:'1관', slots:[ ['10:10','단편선 5 : 부둣가'], ['13:40','야간열차'], ['17:20','마지막 인화'] ] },
+      { name:'2관', slots:[ ['11:00','커뮤니티비프 리퀘스트시네마 (예시)'], ['14:30','취생몽사 상영 (예시)'], ['19:00','블라인드시네마 (예시)'] ] },
+    ],
+    2: [ // 남포동 비프광장 야외무대 — 스크린 1개 (야외상영)
+      { name:'야외무대', slots:[ ['18:00','올데이시네마 오프닝 (예시)'], ['20:30','커비컬렉션 특별상영 (예시)'] ] },
+    ],
+    3: [ // 부산가톨릭센터 공간101.1 — 스크린 1개
+      { name:'공간101.1', slots:[ ['11:30','단편선 6 : 골목길'], ['15:00','마스터톡 연계 상영 (예시)'], ['18:00','독립영화 발굴전'] ] },
+    ],
+    4: [ // BNK부산은행 아트시네마 — 스크린 1개
+      { name:'아트시네마관', slots:[ ['10:30','복원판 : 부산의 밤'], ['14:00','단편선 7 : 흑백의 기록'], ['17:30','예술영화 특별전 (예시)'] ] },
+    ],
+    5: [ // 영화의전당 — 스크린 3개
+      { name:'하늘연극장', slots:[ ['10:30','단편선 1 : 파도의 기록'], ['14:00','붉은 항구'], ['19:00','개막작 (예시)'] ] },
+      { name:'시네마운틴', slots:[ ['11:00','패럴렐 라인즈'], ['15:30','겨울의 온도'], ['20:00','심야 상영 : 노이즈'] ] },
+      { name:'야외극장',   slots:[ ['19:30','오픈에어 갈라 (예시)'] ] },
+    ],
+    6: [ // CGV 센텀시티 — 스크린 2개
+      { name:'1관', slots:[ ['09:50','firstlight'], ['13:10','모래의 계절'], ['16:40','마지막 발레'], ['20:10','IMAX 특별상영 (예시)'] ] },
+      { name:'2관', slots:[ ['10:20','단편선 2 : 도시의 틈'], ['14:00','유리 정원'], ['17:30','검은 강'] ] },
+    ],
+    7: [ // 롯데시네마 센텀시티 — 스크린 2개
+      { name:'1관', slots:[ ['10:00','항해사의 노트'], ['13:30','분홍빛 여름'], ['17:00','그림자 극장'] ] },
+      { name:'2관', slots:[ ['11:10','단편선 3 : 정류장'], ['15:00','먼 곳의 불빛'], ['18:40','심야의 인터뷰'] ] },
+    ],
+    8: [ // 부산시청자미디어센터 — 스크린 2개
+      { name:'시사실',  slots:[ ['11:00','독립영화 쇼케이스'], ['14:30','다큐멘터리 : 기록자들'] ] },
+      { name:'상영관2', slots:[ ['10:30','애니메이션 단편선'], ['13:40','학생작품전 (예시)'] ] },
+    ],
+    9: [ // 영화진흥위원회 — 스크린 2개
+      { name:'시사실A', slots:[ ['10:00','산업 포럼 상영 (예시)'], ['13:00','복원판 : 옛 항구'] ] },
+      { name:'시사실B', slots:[ ['11:30','신인감독전 1'], ['15:00','신인감독전 2'] ] },
+    ],
+    10:[ // 영상산업센터 — 스크린 2개
+      { name:'스튜디오1', slots:[ ['10:30','VR 단편 쇼케이스'], ['14:00','크로스미디어 특별전'] ] },
+      { name:'스튜디오2', slots:[ ['11:00','로컬 크리에이터전'], ['15:30','사운드 다큐'] ] },
+    ],
+    11:[ // 동서대 소향씨어터 신한카드홀 — 스크린 2개
+      { name:'소향씨어터', slots:[ ['10:00','뮤지컬 다큐 : 무대 뒤'], ['14:30','청춘의 합창'], ['19:00','폐막 공연 상영 (예시)'] ] },
+      { name:'신한카드홀', slots:[ ['11:30','단편선 4 : 첫 무대'], ['16:00','졸업작품전'] ] },
+    ],
   };
 
   // 오픈토크 / 굿즈샵 / 포토존 — 전부 가상으로 만든 예시 데이터 (실제 BIFF 운영 정보 아님)
@@ -1011,51 +1146,82 @@
   }
 
   // ---- venue card ----
-  function homeTabHTML_venue(v){
-    const meta = VENUE_META[v.id];
-    const tb = TICKETBOX[v.id];
-    const noticeLines = tb
-      ? tb.map(t => `<div>🎫 ${tb.length>1 ? t.loc+' · ' : ''}${t.period} · ${t.hours}</div>`).join('')
-      : `<div>이 행사장은 별도 매표소 없이 운영돼요</div>`;
-    const extra = tb
-      ? `<div class="dc-extra" hidden>${tb.map(t => `<div>결제 : ${t.pay}${t.note ? ' · '+t.note : ''}</div>`).join('')}</div>`
-      : '';
-    const a11yLine = tb ? `<div class="a11y-line">♿ 디지털 취약계층 우선 현장예매 좌석 일부 운영 (예시)</div>` : '';
+  function scheduleCardHTML(v){
+    const screens = SCREENINGS[v.id];
+    if(!screens) return '';
+    const tabs = screens.map((s,i) => `<button class="sched-tab ${i===0?'active':''}" data-screen-idx="${i}">${s.name}</button>`).join('');
+    const panels = screens.map((s,i) => {
+      const rows = s.slots.map(([time,film]) => `
+        <div class="sched-row">
+          <span class="sched-time">${time}</span>
+          <span class="sched-film">${film}</span>
+        </div>
+      `).join('');
+      return `<div class="sched-panel" data-screen-panel="${i}" ${i===0?'':'hidden'}>${rows}</div>`;
+    }).join('');
     return `
-      <div class="dc-tabpanel" data-panel="home">
-        <p class="dc-section-h">공지사항</p>
-        <div class="dc-notice-card">
-          <div class="dc-notice-thumb">${meta.icon}</div>
-          <div class="dc-notice-text">
-            <div>개최기간 : 9/17(수)~9/26(금)</div>
-            ${noticeLines}
-            ${a11yLine}
-            <div class="muted">2025.06.24. 업데이트 · 예시 데이터</div>
-          </div>
+      <div class="detail-section">
+        <p class="detail-section-title">🎞 상영 스케줄 (예시)</p>
+        <div class="sched-card">
+          <div class="sched-tabs">${tabs}</div>
+          ${panels}
         </div>
-        ${extra}
-        ${tb ? `<div class="dc-expand-row"><button class="dc-expand-btn">펼치기 ⌄</button></div>` : ''}
+      </div>
+    `;
+  }
+  function ticketCardHTML(v){
+    const tb = TICKETBOX[v.id];
+    if(!tb) return '';
+    const rows = tb.map(t => `
+      <div class="tkt-row">
+        <div class="tkt-loc">${t.loc}</div>
+        <div class="tkt-meta">${t.period} · ${t.hours} · ${t.pay}</div>
+        ${t.note ? `<div class="tkt-note">${t.note}</div>` : ''}
+      </div>
+    `).join('');
+    return `
+      <div class="detail-section">
+        <p class="detail-section-title">🎫 현장 매표소 운영 (임시)</p>
+        <div class="tkt-card">
+          <div class="tkt-head"><span class="tkt-icon">🎫</span><span class="tkt-title">현장 매표소 운영 중</span></div>
+          ${rows}
+          <div class="tkt-a11y">♿ 디지털 취약계층 우선 현장예매 좌석 일부 운영 (예시)</div>
+        </div>
+      </div>
+    `;
+  }
+  function venueFlowContent(v){
+    return `
+        ${ticketCardHTML(v)}
 
-        <div class="detail-section">
-          <p class="detail-section-title">📍 위치</p>
-          <div class="info-row"><span class="icon">·</span><span>${v.addr}</span></div>
-        </div>
+        ${scheduleCardHTML(v)}
 
         ${CAFES[v.id] ? cafeCarouselHTML(v) : ''}
         ${GOODS.filter(g=>g.district===v.district).length ? poiCarouselHTML('🛍️ 근처 굿즈샵 (예시)', 'goods', GOODS.filter(g=>g.district===v.district)) : ''}
         ${PHOTOZONE.filter(p=>p.district===v.district).length ? poiCarouselHTML('📸 근처 포토존 (예시)', 'photo', PHOTOZONE.filter(p=>p.district===v.district)) : ''}
-      </div>
     `;
   }
   function buildVenueCard(v){
     const meta = VENUE_META[v.id];
+    const hasTicket = !!TICKETBOX[v.id];
     const themeClass = v.district === 'nampo' ? 'theme-nampo' : 'theme-centum';
-    return heroHTML(themeClass, meta, v.kr, v.addr)
-         + tabsHTML()
-         + homeTabHTML_venue(v)
-         + placeholderHTML('talk','현장톡','💬')
-         + placeholderHTML('photo','사진','🖼️')
-         + placeholderHTML('blog','블로그','✍️');
+    const crumbText = v.district === 'nampo' ? '🎪 커뮤니티비프' : '🎬 부산국제영화제';
+    const crumbTarget = v.district === 'nampo' ? 'comm' : 'main';
+    const subtitle = `${meta.category} · ${DISTRICTS[v.district].label.split(' ')[0]}`;
+    return `
+      <div class="dc-hero2 ${themeClass}">
+        <div class="dc-handle2"></div>
+        <button class="dc-close">✕</button>
+        <div class="dc-avatar-wrap">
+          <div class="dc-avatar">${meta.icon}</div>
+          <div class="dc-avatar-badge ${hasTicket ? '' : 'no-ticket'}">${hasTicket ? '🎫' : '📍'}</div>
+        </div>
+        <p class="dc-crumb" data-crumb="${crumbTarget}">${crumbText} ›</p>
+        <p class="dc-title2">${v.kr}</p>
+        <p class="dc-subtitle2">${subtitle}</p>
+      </div>
+      <div class="dc-flow">${venueFlowContent(v)}</div>
+    `;
   }
 
   // ---- BIFF hub card ----
@@ -1176,6 +1342,21 @@
       tab.addEventListener('click', () => {
         panelBody.querySelectorAll('.dc-tab').forEach(t => t.classList.toggle('active', t===tab));
         panelBody.querySelectorAll('.dc-tabpanel').forEach(p => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+      });
+    });
+
+    const crumbEl = panelBody.querySelector('.dc-crumb');
+    if(crumbEl){
+      crumbEl.addEventListener('click', () => {
+        if(crumbEl.dataset.crumb === 'comm') openCommHubDetail(); else openHubDetail();
+      });
+    }
+
+    panelBody.querySelectorAll('.sched-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const card = tab.closest('.sched-card');
+        card.querySelectorAll('.sched-tab').forEach(t => t.classList.toggle('active', t===tab));
+        card.querySelectorAll('.sched-panel').forEach(p => { p.hidden = p.dataset.screenPanel !== tab.dataset.screenIdx; });
       });
     });
 
@@ -1413,6 +1594,19 @@
     ticketOnly = !ticketOnly;
     ticketToggleEl.classList.toggle('active', ticketOnly);
     applyView();
+  });
+
+  // ---------- map UI show/hide (안내창 · 범례 · 옵션 토글) ----------
+  const topbarUI = document.getElementById('topbarUI');
+  const uiToggleBtn = document.getElementById('uiToggleBtn');
+  const uiToggleIcon = document.getElementById('uiToggleIcon');
+  const uiToggleLabel = document.getElementById('uiToggleLabel');
+  let uiVisible = true;
+  uiToggleBtn.addEventListener('click', () => {
+    uiVisible = !uiVisible;
+    topbarUI.classList.toggle('ui-hidden', !uiVisible);
+    uiToggleIcon.textContent = uiVisible ? '🙈' : '👁️';
+    uiToggleLabel.textContent = uiVisible ? 'UI 숨기기' : 'UI 표시';
   });
 
   // ---------- init ----------
