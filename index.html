@@ -165,6 +165,33 @@
   .hub-shortcuts button[data-hub="comm"].active-hub{ background:var(--nampo); }
   .hub-shortcuts button[data-hub="all"].active-hub{ background:var(--text); }
 
+  .poi-filters{
+    display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;
+    background:var(--surface); backdrop-filter:blur(10px);
+    border:1px solid var(--border); border-radius:14px;
+    padding:8px 12px; box-shadow:var(--shadow);
+  }
+  .poi-filter-chip{
+    display:flex; align-items:center; gap:5px;
+    font-size:12px; font-weight:600; color:var(--text-muted);
+    cursor:pointer; user-select:none;
+    padding:4px 10px; border-radius:999px;
+    border:1.5px solid var(--border);
+    background:transparent;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .poi-filter-chip input[type="checkbox"]{ display:none; }
+  .poi-filter-chip .chip-dot{
+    width:8px; height:8px; border-radius:50%; flex:none;
+    border:1.5px solid currentColor; transition:background .15s;
+  }
+  .poi-filter-chip.on-talk{ border-color:#4F6BD8; color:#4F6BD8; background:rgba(79,107,216,0.08); }
+  .poi-filter-chip.on-talk .chip-dot{ background:#4F6BD8; }
+  .poi-filter-chip.on-goods{ border-color:#E0529C; color:#E0529C; background:rgba(224,82,156,0.08); }
+  .poi-filter-chip.on-goods .chip-dot{ background:#E0529C; }
+  .poi-filter-chip.on-photo{ border-color:#16A34A; color:#16A34A; background:rgba(22,163,74,0.08); }
+  .poi-filter-chip.on-photo .chip-dot{ background:#16A34A; }
+
   /* ---------- venue / app panel ---------- */
   .panel{
     position:absolute; left:16px; bottom:16px;
@@ -528,6 +555,20 @@
       <button data-hub="all" class="active-hub">전체</button>
       <button data-hub="biff">🎬 부산국제영화제</button>
       <button data-hub="comm">🎪 커뮤니티비프</button>
+    </div>
+    <div class="poi-filters">
+      <label class="poi-filter-chip" data-poi="opentalk">
+        <input type="checkbox">
+        <span class="chip-dot"></span>🎙️ 오픈토크
+      </label>
+      <label class="poi-filter-chip" data-poi="goods">
+        <input type="checkbox">
+        <span class="chip-dot"></span>🛍️ 굿즈샵
+      </label>
+      <label class="poi-filter-chip" data-poi="photo">
+        <input type="checkbox">
+        <span class="chip-dot"></span>📸 포토존
+      </label>
     </div>
     <div class="ticket-toggle" id="ticketToggle"><span class="dot"></span>현장 매표소만</div>
     <p class="ticket-hint">🎫 표시 = 임시 현장 매표소 운영 장소 (9/17~9/26 중, 장소별 기간 다름)</p>
@@ -1296,6 +1337,32 @@
     });
   });
 
+  // POI category on/off state
+  const poiVisible = { opentalk: false, goods: false, photo: false };
+  const poiChips = document.querySelectorAll('.poi-filter-chip');
+  poiChips.forEach(chip => {
+    const checkbox = chip.querySelector('input[type="checkbox"]');
+    checkbox.addEventListener('change', () => {
+      const type = chip.dataset.poi;
+      poiVisible[type] = checkbox.checked;
+      const onClass = type === 'opentalk' ? 'on-talk' : type === 'goods' ? 'on-goods' : 'on-photo';
+      chip.classList.toggle(onClass, poiVisible[type]);
+      applyPoiVisibility();
+    });
+  });
+
+  function applyPoiVisibility(){
+    const typeMap = { opentalk: OPENTALK, goods: GOODS, photo: PHOTOZONE };
+    Object.entries(typeMap).forEach(([type, arr]) => {
+      arr.forEach(p => {
+        const el = poiMarkers[p.id] && poiMarkers[p.id].getElement();
+        if(!el) return;
+        const inner = el.querySelector('.poi-marker');
+        if(inner) inner.style.display = poiVisible[type] ? '' : 'none';
+      });
+    });
+  }
+
   function applyView(){
     VENUES.forEach(v => {
       const el = markers[v.id].getElement();
@@ -1332,6 +1399,7 @@
       inner.classList.toggle('dim', ticketOnly);
     });
     showList();
+    applyPoiVisibility();
     map.flyToBounds(boundsFor(currentDistrict, ticketOnly), { padding:[80,80], duration:0.7, maxZoom:16 });
   }
 
