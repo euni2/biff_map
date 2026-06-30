@@ -140,6 +140,31 @@
     text-align:right; max-width:200px;
   }
 
+  .hub-shortcuts{
+    display:flex; gap:4px;
+    background:var(--surface);
+    backdrop-filter: blur(10px);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:4px;
+    box-shadow:var(--shadow);
+  }
+  .hub-shortcuts button{
+    appearance:none; border:none; cursor:pointer;
+    font-family:'Pretendard', sans-serif;
+    font-size:12px; font-weight:600;
+    padding:7px 12px; border-radius:999px;
+    background:transparent; color:var(--text-muted);
+    transition:background .18s, color .18s;
+    white-space:nowrap;
+    display:flex; align-items:center; gap:4px;
+  }
+  .hub-shortcuts button:hover{ background:rgba(0,0,0,0.05); color:var(--text); }
+  .hub-shortcuts button.active-hub{ color:#fff; }
+  .hub-shortcuts button[data-hub="biff"].active-hub{ background:var(--hub); }
+  .hub-shortcuts button[data-hub="comm"].active-hub{ background:var(--nampo); }
+  .hub-shortcuts button[data-hub="all"].active-hub{ background:var(--text); }
+
   /* ---------- venue / app panel ---------- */
   .panel{
     position:absolute; left:16px; bottom:16px;
@@ -498,6 +523,11 @@
       <button data-d="all" class="active">전체</button>
       <button data-d="nampo">남포동</button>
       <button data-d="centum">센텀시티</button>
+    </div>
+    <div class="hub-shortcuts">
+      <button data-hub="all" class="active-hub">전체</button>
+      <button data-hub="biff">🎬 부산국제영화제</button>
+      <button data-hub="comm">🎪 커뮤니티비프</button>
     </div>
     <div class="ticket-toggle" id="ticketToggle"><span class="dot"></span>현장 매표소만</div>
     <p class="ticket-hint">🎫 표시 = 임시 현장 매표소 운영 장소 (9/17~9/26 중, 장소별 기간 다름)</p>
@@ -1238,6 +1268,7 @@
     mode = 'list';
     cafeLayer.clearLayers();
     setHighlight(null);
+    setHubShortcut('all');
     panelOuter.classList.remove('detail-mode');
     panelBody.classList.remove('detail-mode');
     panelActionBar.style.display = 'none';
@@ -1249,6 +1280,21 @@
   // ---------- toggle ----------
   const toggleBtns = document.querySelectorAll('.toggle button');
   const ticketToggleEl = document.getElementById('ticketToggle');
+
+  // hub shortcut pill
+  const hubShortcutBtns = document.querySelectorAll('.hub-shortcuts button');
+  function setHubShortcut(key){
+    hubShortcutBtns.forEach(b => b.classList.toggle('active-hub', b.dataset.hub === key));
+  }
+  hubShortcutBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.hub;
+      setHubShortcut(key);
+      if(key === 'biff') openHubDetail();
+      else if(key === 'comm') openCommHubDetail();
+      else showList();
+    });
+  });
 
   function applyView(){
     VENUES.forEach(v => {
