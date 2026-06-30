@@ -24,6 +24,11 @@
     --ticket-soft:#FBEEDB;
     --cafe:#DC2626;
     --cafe-soft:#FCE4E4;
+    --hub:#C9952E;
+    --hub-soft:#FBF1DC;
+    --opentalk:#4F46E5;
+    --goods:#DB2777;
+    --photo:#0891B2;
     --shadow: 0 8px 28px rgba(20,20,30,0.10), 0 1px 3px rgba(20,20,30,0.06);
   }
 
@@ -135,26 +140,32 @@
     text-align:right; max-width:200px;
   }
 
-  /* ---------- venue panel ---------- */
+  /* ---------- venue / app panel ---------- */
   .panel{
     position:absolute; left:16px; bottom:16px;
-    width:328px; max-height:48vh;
+    width:328px; max-height:54vh;
     z-index:1000;
     background:var(--surface); backdrop-filter:blur(10px);
     border:1px solid var(--border); border-radius:18px;
     box-shadow:var(--shadow);
     display:flex; flex-direction:column;
     overflow:hidden;
+    transition:max-height .2s;
   }
+  .panel.detail-mode{ max-height:78vh; }
+
   .panel-head{
     padding:14px 16px 10px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; justify-content:space-between;
+    display:flex; align-items:center; gap:8px;
   }
   .panel-head span{ font-size:12.5px; font-weight:700; }
   .panel-head .count{
     font-family:'JetBrains Mono', monospace; font-size:11px; color:var(--text-muted);
+    margin-left:auto;
   }
+
   .panel-list{ overflow-y:auto; padding:6px; }
+  .panel-list.detail-mode{ padding:0; }
   .panel-list::-webkit-scrollbar{ width:6px; }
   .panel-list::-webkit-scrollbar-thumb{ background:#D8DAE0; border-radius:4px; }
 
@@ -177,7 +188,7 @@
     width:6px; height:6px; border-radius:50%; background:var(--ticket); flex:none;
   }
 
-  /* ---------- leaflet marker ---------- */
+  /* ---------- leaflet markers ---------- */
   .venue-marker-wrap{ position:relative; width:30px; height:30px; }
   .venue-marker-wrap.dim{ opacity:0.28; }
   .venue-marker{
@@ -187,9 +198,11 @@
     color:#fff; font-weight:700; font-size:12.5px;
     font-family:'Pretendard', sans-serif;
     box-shadow:0 3px 8px rgba(0,0,0,0.28);
+    transition:box-shadow .15s;
   }
   .venue-marker--nampo{ background:var(--nampo); }
   .venue-marker--centum{ background:var(--centum); }
+  .venue-marker.selected-ring{ box-shadow:0 0 0 4px rgba(20,20,30,0.20), 0 3px 8px rgba(0,0,0,0.3); }
   .ticket-pin-badge{
     position:absolute; top:-5px; right:-5px;
     width:15px; height:15px; border-radius:50%;
@@ -197,6 +210,18 @@
     display:flex; align-items:center; justify-content:center;
     font-size:8px; line-height:1;
   }
+
+  .poi-marker{
+    width:30px; height:30px; border-radius:50%;
+    border:2.5px solid #fff; box-shadow:0 3px 8px rgba(0,0,0,0.28);
+    display:flex; align-items:center; justify-content:center; font-size:14px;
+    transition:box-shadow .15s;
+  }
+  .poi-marker.dim{ opacity:0.28; }
+  .poi-marker.selected-ring{ box-shadow:0 0 0 4px rgba(20,20,30,0.20), 0 3px 8px rgba(0,0,0,0.3); }
+  .poi-marker--opentalk{ background:var(--opentalk); }
+  .poi-marker--goods{ background:var(--goods); }
+  .poi-marker--photo{ background:var(--photo); }
 
   .cafe-dot{
     width:26px; height:26px; border-radius:50%;
@@ -210,47 +235,245 @@
   }
   .leaflet-tooltip.cafe-tooltip::before{ border-top-color:var(--text); }
 
-  .leaflet-popup-content-wrapper{ border-radius:14px; box-shadow:var(--shadow); }
-  .popup{ font-family:'Pretendard', sans-serif; min-width:200px; max-width:250px; }
-  .popup .district-tag{
-    display:inline-block; font-family:'JetBrains Mono', monospace;
-    font-size:10px; letter-spacing:0.06em; text-transform:uppercase;
-    padding:2px 7px; border-radius:6px; margin-bottom:6px;
+  .biff-hub{ display:flex; flex-direction:column; align-items:center; width:150px; cursor:pointer; }
+  .biff-hub.dim{ opacity:0.28; }
+  .biff-hub-label{
+    background:var(--text); color:#fff; font-size:11px; font-weight:700;
+    padding:6px 12px; border-radius:999px; white-space:nowrap;
+    box-shadow:var(--shadow); margin-bottom:5px;
   }
-  .popup .district-tag.nampo{ background:var(--nampo-soft); color:var(--nampo); }
-  .popup .district-tag.centum{ background:var(--centum-soft); color:var(--centum); }
-  .popup .name-kr{ font-size:14px; font-weight:700; margin:0 0 1px; }
-  .popup .name-en{ font-size:11.5px; color:var(--text-muted); margin:0 0 6px; }
-  .popup .addr{ font-size:11.5px; color:var(--text); line-height:1.4; }
-  .popup .tb-block{ margin-top:9px; padding-top:8px; border-top:1px dashed var(--border); }
-  .popup .tb-title{
-    font-size:10.5px; font-weight:700; color:var(--ticket); margin:0 0 5px;
-    letter-spacing:0.01em;
+  .biff-hub-dot{
+    width:26px; height:26px; border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #F5D98A, var(--hub));
+    border:3px solid #fff;
+    box-shadow:0 3px 10px rgba(0,0,0,0.35), 0 0 0 5px rgba(201,149,46,0.22);
+    transition:box-shadow .15s;
   }
-  .popup .tb-row{ margin-bottom:6px; }
-  .popup .tb-row:last-child{ margin-bottom:0; }
-  .popup .tb-loc{ font-size:11.5px; font-weight:600; color:var(--text); }
-  .popup .tb-meta{ font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-muted); margin-top:1px; }
-  .popup .tb-note{ font-size:10.5px; color:var(--ticket); margin-top:1px; }
+  .biff-hub-dot.selected-ring{ box-shadow:0 0 0 5px rgba(201,149,46,0.4), 0 3px 10px rgba(0,0,0,0.35); }
 
-  .popup .cafe-block{ margin-top:9px; padding-top:8px; border-top:1px dashed var(--border); }
-  .popup .cafe-title{
-    font-size:10.5px; font-weight:700; color:var(--cafe); margin:0 0 5px;
+  .comm-hub{ display:flex; flex-direction:column; align-items:center; width:150px; cursor:pointer; }
+  .comm-hub.dim{ opacity:0.28; }
+  .comm-hub-label{
+    background:var(--text); color:#fff; font-size:11px; font-weight:700;
+    padding:6px 12px; border-radius:999px; white-space:nowrap;
+    box-shadow:var(--shadow); margin-bottom:5px;
   }
-  .popup .cafe-row{
-    display:flex; align-items:baseline; justify-content:space-between; gap:8px;
-    font-size:11.5px; margin-bottom:3px;
+  .comm-hub-dot{
+    width:26px; height:26px; border-radius:50%;
+    background:radial-gradient(circle at 32% 28%, #C7B3F0, var(--nampo));
+    border:3px solid #fff;
+    box-shadow:0 3px 10px rgba(0,0,0,0.35), 0 0 0 5px rgba(109,79,196,0.22);
+    transition:box-shadow .15s;
   }
-  .popup .cafe-row:last-child{ margin-bottom:0; }
-  .popup .cafe-name{ color:var(--text); flex:1 1 auto; line-height:1.3; }
-  .popup .cafe-meta{
-    flex:none; font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-muted);
+  .comm-hub-dot.selected-ring{ box-shadow:0 0 0 5px rgba(109,79,196,0.4), 0 3px 10px rgba(0,0,0,0.35); }
+
+  /* ---------- app-style detail card (event-card layout) ---------- */
+  .dc-hero{
+    position:relative; padding:14px 16px 18px; text-align:center;
+    color:#fff; overflow:hidden;
   }
+  .dc-hero.theme-nampo{ background:linear-gradient(160deg,#2D2150 0%, var(--nampo) 55%, #4B36A0 100%); }
+  .dc-hero.theme-centum{ background:linear-gradient(160deg,#0B3B38 0%, var(--centum) 55%, #0E6E63 100%); }
+  .dc-hero.theme-hub{ background:linear-gradient(160deg,#4A3A12 0%, var(--hub) 55%, #B07F1E 100%); }
+  .dc-hero.theme-opentalk{ background:linear-gradient(160deg,#201A5E 0%, var(--opentalk) 55%, #6366F1 100%); }
+  .dc-hero.theme-goods{ background:linear-gradient(160deg,#570F31 0%, var(--goods) 55%, #EC4899 100%); }
+  .dc-hero.theme-photo{ background:linear-gradient(160deg,#063943 0%, var(--photo) 55%, #22B8CF 100%); }
+
+  .dc-handle{ width:36px; height:4px; border-radius:3px; background:rgba(255,255,255,0.4); margin:0 auto 10px; }
+  .dc-close{
+    position:absolute; top:12px; right:14px;
+    width:30px; height:30px; border-radius:50%;
+    background:rgba(0,0,0,0.35); border:none; color:#fff; cursor:pointer;
+    font-size:14px; display:flex; align-items:center; justify-content:center;
+    transition:background .15s;
+  }
+  .dc-close:hover{ background:rgba(0,0,0,0.5); }
+
+  .dc-poster{
+    width:108px; height:140px; margin:6px auto 12px; border-radius:14px;
+    background:rgba(255,255,255,0.14); border:1px solid rgba(255,255,255,0.25);
+    box-shadow:0 10px 24px rgba(0,0,0,0.35);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  }
+  .dc-poster-icon{ font-size:40px; filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3)); }
+  .dc-poster-cat{ font-size:10px; font-weight:700; color:rgba(255,255,255,0.85); letter-spacing:0.03em; }
+
+  .dc-status-pill{
+    display:inline-block; background:#fff; color:var(--text);
+    font-size:11px; font-weight:700; padding:4px 12px; border-radius:999px;
+    margin-bottom:8px;
+  }
+  .dc-status-pill.ended{ color:#8A8F98; }
+  .dc-status-pill.live{ color:#0E9488; }
+  .dc-status-pill.upcoming{ color:#2563EB; }
+
+  .dc-title{ font-size:18px; font-weight:700; margin:0 0 3px; }
+  .dc-date{ font-size:12.5px; color:rgba(255,255,255,0.85); margin:0 0 6px; }
+  .dc-loc-row{
+    font-size:11.5px; color:rgba(255,255,255,0.75); margin:0;
+    display:inline-flex; align-items:center; gap:4px;
+  }
+
+  .dc-tabs{
+    display:flex; background:var(--surface-solid); border-bottom:1px solid var(--border);
+    position:sticky; top:0; z-index:2;
+  }
+  .dc-tab{
+    flex:1; background:none; border:none; cursor:pointer;
+    padding:11px 4px; font-size:12px; font-weight:600; color:var(--text-muted);
+    border-bottom:2px solid transparent;
+  }
+  .dc-tab.active{ color:#E0512B; border-bottom-color:#E0512B; font-weight:700; }
+
+  .dc-tabpanel{ padding:14px 16px 16px; }
+  .dc-tabpanel[hidden]{ display:none; }
+  .dc-placeholder{ padding:36px 16px; text-align:center; color:var(--text-muted); font-size:12.5px; }
+  .dc-placeholder .ph-icon{ font-size:26px; display:block; margin-bottom:8px; }
+
+  .dc-section-h{ font-size:13px; font-weight:700; margin:0 0 10px; }
+  .dc-notice-card{
+    display:flex; gap:10px; background:var(--bg); border:1px solid var(--border);
+    border-radius:14px; padding:12px;
+  }
+  .dc-notice-thumb{
+    flex:none; width:40px; height:40px; border-radius:10px;
+    display:flex; align-items:center; justify-content:center; font-size:18px;
+    background:var(--hub-soft);
+  }
+  .dc-notice-text{ font-size:12px; line-height:1.65; color:var(--text); }
+  .dc-notice-text .muted{ color:var(--text-muted); font-size:10.5px; margin-top:4px; }
+  .dc-extra{ margin-top:4px; }
+  .dc-extra[hidden]{ display:none; }
+  .dc-expand-row{ text-align:center; margin:8px 0 4px; }
+  .dc-expand-btn{
+    background:none; border:none; cursor:pointer; font-size:11.5px; color:var(--text-muted);
+    display:inline-flex; align-items:center; gap:3px;
+  }
+
+  .detail-section{ margin-top:14px; padding-top:12px; border-top:1px solid var(--border); }
+  .detail-section-title{
+    font-size:11px; font-weight:700; color:var(--text-muted); margin:0 0 8px;
+    text-transform:uppercase; letter-spacing:0.03em;
+  }
+  .info-row{ display:flex; gap:7px; font-size:12px; color:var(--text); line-height:1.4; }
+  .info-row .icon{ flex:none; color:var(--text-muted); }
+
+  .cafe-carousel{
+    display:flex; gap:8px; overflow-x:auto;
+    margin:0 -16px; padding:0 16px 4px;
+  }
+  .cafe-carousel::-webkit-scrollbar{ height:5px; }
+  .cafe-carousel::-webkit-scrollbar-thumb{ background:#D8DAE0; border-radius:4px; }
+  .cafe-card{
+    flex:none; width:104px; background:var(--bg); border:1px solid var(--border);
+    border-radius:12px; padding:10px; cursor:pointer;
+    transition:border-color .15s, transform .15s;
+  }
+  .cafe-card:hover{ border-color:var(--cafe); transform:translateY(-1px); }
+  .cc-icon{
+    width:24px; height:24px; border-radius:50%; background:var(--cafe); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:11px; margin-bottom:6px;
+  }
+  .cc-name{
+    font-size:10.5px; font-weight:600; line-height:1.3; color:var(--text);
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:27px;
+  }
+  .cc-meta{ font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--text-muted); margin-top:5px; }
+
+  .poi-card{
+    flex:none; width:104px; background:var(--bg); border:1px solid var(--border);
+    border-radius:12px; padding:10px; cursor:pointer;
+    transition:border-color .15s, transform .15s;
+  }
+  .poi-card:hover{ transform:translateY(-1px); }
+  .poi-card-icon{
+    width:24px; height:24px; border-radius:50%; color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:11px; margin-bottom:6px;
+  }
+  .poi-card-name{
+    font-size:10.5px; font-weight:600; line-height:1.3; color:var(--text);
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; min-height:27px;
+  }
+  .poi-card-loc{ font-family:'JetBrains Mono', monospace; font-size:9.5px; color:var(--text-muted); margin-top:5px; }
+
+  .hub-list{ margin-top:2px; }
+  .hub-row{
+    display:flex; gap:8px; align-items:flex-start;
+    padding:7px 6px; border-radius:10px; cursor:pointer;
+    transition:background .15s;
+  }
+  .hub-row:hover{ background:rgba(0,0,0,0.05); }
+  .hub-num{
+    flex:none; width:20px; height:20px; border-radius:50%;
+    background:var(--centum); color:#fff; font-size:10.5px; font-weight:700;
+    display:flex; align-items:center; justify-content:center; margin-top:1px;
+  }
+  .hub-name-kr{ font-size:12.5px; font-weight:600; color:var(--text); }
+  .hub-name-en{ font-size:10.5px; color:var(--text-muted); margin-top:1px; }
+  .hub-tb{ margin-top:3px; }
+  .hub-tb div{ font-size:9.5px; color:var(--ticket); line-height:1.45; margin-bottom:1px; }
+  .hub-tb div:last-child{ margin-bottom:0; }
+
+  .a11y-line{ font-size:10px; color:var(--centum); margin-top:2px; }
+
+  .prog-chip-row{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+  .prog-chip{
+    font-size:10.5px; font-weight:600; color:var(--nampo);
+    background:var(--nampo-soft); padding:5px 10px; border-radius:999px;
+  }
+
+  .evt-card{ background:var(--bg); border:1px solid var(--border); border-radius:14px; padding:12px 14px; }
+  .evt-head{ display:flex; align-items:baseline; gap:8px; margin-bottom:10px; }
+  .evt-date{ font-family:'JetBrains Mono', monospace; font-size:11px; font-weight:700; color:var(--text); }
+  .evt-label{ font-size:12px; font-weight:700; color:var(--ticket); }
+  .evt-steps{ position:relative; padding-left:14px; }
+  .evt-step{ position:relative; padding-bottom:14px; }
+  .evt-step:last-child{ padding-bottom:0; }
+  .evt-step::before{
+    content:''; position:absolute; left:-14px; top:3px;
+    width:8px; height:8px; border-radius:50%; background:var(--ticket);
+  }
+  .evt-step:not(:last-child)::after{
+    content:''; position:absolute; left:-10.5px; top:11px;
+    width:1px; height:calc(100% - 4px); background:var(--border);
+  }
+  .evt-time{ font-family:'JetBrains Mono', monospace; font-size:10px; color:var(--text-muted); }
+  .evt-step-label{ font-size:12px; font-weight:600; color:var(--text); margin-top:1px; }
+  .evt-notes{ margin-top:10px; padding-top:8px; border-top:1px dashed var(--border); }
+  .evt-notes div{ font-size:10px; color:var(--text-muted); line-height:1.5; margin-bottom:2px; }
+  .evt-notes div:last-child{ margin-bottom:0; }
+
+  /* ---------- sticky bottom action bar ---------- */
+  .panel-actionbar{
+    display:none;
+    align-items:center; gap:8px;
+    padding:10px 14px; border-top:1px solid var(--border);
+    background:var(--surface);
+    flex:none;
+  }
+  .dc-icon-btn{
+    width:38px; height:38px; border-radius:50%; flex:none;
+    background:var(--bg); border:1px solid var(--border);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px; color:var(--text); cursor:pointer; text-decoration:none;
+    transition:background .15s, border-color .15s;
+  }
+  .dc-icon-btn:hover{ background:#EFF1F4; }
+  .dc-icon-btn.saved{ background:var(--hub-soft); border-color:var(--hub); color:#9C7521; }
+  .dc-cta{
+    flex:1; height:38px; border:none; border-radius:999px;
+    background:linear-gradient(135deg,#FF8A4C,#E0512B); color:#fff;
+    font-size:12.5px; font-weight:700; cursor:pointer; text-decoration:none;
+    display:flex; align-items:center; justify-content:center; gap:5px;
+    transition:opacity .15s;
+  }
+  .dc-cta:hover{ opacity:0.92; }
 
   @media (max-width:560px){
     .brand{ max-width:200px; padding:10px 14px; }
     .brand h1{ font-size:15px; }
-    .panel{ width:calc(100% - 32px); max-height:38vh; }
+    .panel{ width:calc(100% - 32px); max-height:42vh; }
+    .panel.detail-mode{ max-height:68vh; }
     .toggle button{ padding:7px 10px; font-size:11.5px; }
     .ticket-hint{ display:none; }
   }
@@ -265,7 +488,10 @@
     <p class="eyebrow">BIFF 2025 · VENUE MAP</p>
     <h1>부산국제영화제 행사장 지도</h1>
     <p>남포동 · 센텀시티 두 거점의 11개 행사장</p>
-    <p style="margin-top:4px;">☕ 마커 클릭 시 도보 10분 이내 카페를 지도에 점으로 표시</p>
+    <p style="margin-top:4px;">📍 마커를 클릭하면 상세 정보 카드가 열려요</p>
+    <p style="margin-top:4px;">🎬 금색 포인트 = 부산국제영화제, 클릭 시 상영관 7곳 목록</p>
+    <p style="margin-top:4px;">🎪 보라 포인트 = 커뮤니티비프, 남포동 4곳을 묶은 서브 허브</p>
+    <p style="margin-top:4px;">🎙️🛍️📸 오픈토크·굿즈샵·포토존도 지도에 표시 (예시)</p>
   </div>
   <div class="controls">
     <div class="toggle">
@@ -279,12 +505,10 @@
   </div>
 </div>
 
-<div class="panel">
-  <div class="panel-head">
-    <span id="panelTitle">전체 행사장</span>
-    <span class="count" id="panelCount">11곳</span>
-  </div>
-  <div class="panel-list" id="panelList"></div>
+<div class="panel" id="panelOuter">
+  <div class="panel-head" id="panelHead"></div>
+  <div class="panel-list" id="panelBody"></div>
+  <div class="panel-actionbar" id="panelActionBar"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
@@ -308,6 +532,21 @@
     { id:10, district:'centum', num:6, kr:'영상산업센터', en:'Busan Film & Audiovisual Industry Center', lat:35.172208, lng:129.126677, addr:'부산 해운대구 센텀서로 39' },
     { id:11, district:'centum', num:7, kr:'동서대 소향씨어터 신한카드홀', en:'Dongseo Univ. Sohyang Theatre', lat:35.172832, lng:129.127731, addr:'부산 해운대구 센텀중앙로 55' },
   ];
+
+  // 카드 상단 "포스터"에 쓰는 아이콘/카테고리 — 예시용 목업 데이터
+  const VENUE_META = {
+    1:  { icon:'🎬', category:'영화관' },
+    2:  { icon:'🎪', category:'야외무대' },
+    3:  { icon:'🎨', category:'복합문화공간' },
+    4:  { icon:'🎬', category:'예술영화관' },
+    5:  { icon:'🎬', category:'복합문화시설' },
+    6:  { icon:'🎬', category:'영화관' },
+    7:  { icon:'🎬', category:'영화관' },
+    8:  { icon:'🏢', category:'미디어센터' },
+    9:  { icon:'🏢', category:'공공기관' },
+    10: { icon:'🏢', category:'산업센터' },
+    11: { icon:'🎭', category:'공연장' },
+  };
 
   // 현장 매표소 운영 안내 (장소별로 1개 또는 여러 개 운영 지점)
   const TICKETBOX = {
@@ -356,6 +595,69 @@
     'Coffee Smith 센텀':               [35.1727935,129.1279005],
   };
 
+  // 오픈토크 / 굿즈샵 / 포토존 — 전부 가상으로 만든 예시 데이터 (실제 BIFF 운영 정보 아님)
+  const OPENTALK = [
+    { id:'ot1', name:'오픈토크 - 게스트 GV', lat:35.1587, lng:129.1603, district:null,
+      loc:'해운대 해변 특별무대',
+      desc:'해운대 해변에 마련되는 오픈토크 특별무대예요. 게스트와 관객이 만나는 깜짝 프로그램이라는 설정의 예시 데이터예요.' },
+  ];
+
+  const GOODS = [
+    { id:'g1', name:'BIFF 굿즈샵 - 광복로', district:'nampo', lat:35.0989, lng:129.0292,
+      loc:'남포동 광복로', desc:'기념 배지, 에코백 등을 파는 임시 굿즈샵이에요 (예시 데이터).' },
+    { id:'g2', name:'BIFF 굿즈샵 - 비프광장', district:'nampo', lat:35.0978, lng:129.0288,
+      loc:'남포동 비프광장', desc:'비프광장 야외무대 옆 임시 굿즈 부스예요 (예시 데이터).' },
+    { id:'g3', name:'BIFF 굿즈샵 - 영화의전당', district:'centum', lat:35.1715, lng:129.1278,
+      loc:'센텀시티 영화의전당', desc:'영화의전당 BIFF힐 앞 임시 굿즈샵이에요 (예시 데이터).' },
+    { id:'g4', name:'BIFF 굿즈샵 - 신세계 센텀시티', district:'centum', lat:35.1688, lng:129.1306,
+      loc:'센텀시티 신세계백화점', desc:'백화점 내 팝업 형태로 운영되는 굿즈샵이에요 (예시 데이터).' },
+  ];
+
+  const PHOTOZONE = [
+    { id:'pz1', name:'포토존 - 해운대', district:null, lat:35.1595, lng:129.1600,
+      loc:'해운대 해변', desc:'해운대 해변에 마련된 포토존이에요 (예시 데이터).' },
+    { id:'pz2', name:'포토존 - 광안리', district:null, lat:35.1532, lng:129.1186,
+      loc:'광안리 해변', desc:'광안대교가 보이는 광안리 포토존이에요 (예시 데이터).' },
+    { id:'pz3', name:'포토존 - 센텀시티', district:'centum', lat:35.1719, lng:129.1273,
+      loc:'센텀시티 BIFF힐', desc:'영화의전당 BIFF힐 앞 포토존이에요 (예시 데이터).' },
+    { id:'pz4', name:'포토존 - 남포동 (스타의 거리)', district:'nampo', lat:35.0991, lng:129.0298,
+      loc:'남포동 BIFF거리', desc:'배우들의 손도장이 새겨진 "스타의 거리"를 참고한 포토존이에요 (위치는 예시).' },
+  ];
+
+  const POI_THEME = {
+    opentalk: { icon:'🎙️', category:'오픈토크', themeClass:'theme-opentalk', colorVar:'--opentalk' },
+    goods:    { icon:'🛍️', category:'굿즈샵',   themeClass:'theme-goods',    colorVar:'--goods' },
+    photo:    { icon:'📸', category:'포토존',   themeClass:'theme-photo',    colorVar:'--photo' },
+  };
+
+  // 커뮤니티비프(Community BIFF) — 남포동 4개 행사장을 묶는 서브 허브. 실제 2025년 커뮤니티비프 운영 장소·프로그램명을 참고했지만
+  // 지도 위 배치와 설명 문구는 이 프로토타입을 위한 예시 구성입니다.
+  const COMM_HUB_COORD = [35.0987, 129.0292];
+  const nampoVenues = VENUES.filter(v => v.district === 'nampo').sort((a,b)=>a.num-b.num);
+
+  const COMMUNITY_PROGRAMS = [
+    '리퀘스트시네마', '마스터톡', '올데이시네마', '취생몽사', '블라인드시네마', '커비컬렉션',
+  ];
+
+  // "오늘의 이벤트" — 날짜별 행사 타임테이블. 우선 전야제(9/16) 한 건만 예시로 채워두고,
+  // 추후 다른 날짜(개막식/폐막식 등)도 같은 구조로 추가할 수 있도록 배열로 관리합니다.
+  const EVENTS = [
+    {
+      date: '9/16(화)',
+      label: '전야제',
+      steps: [
+        { time:'17:00 ~ 18:00', label:'관객/게스트 입장' },
+        { time:'18:00 ~ 19:00', label:'레드카펫 행사' },
+        { time:'19:00 ~ 20:00', label:'공식행사' },
+        { time:'20:00 ~',       label:'개·폐막작 상영' },
+      ],
+      notes: [
+        '개·폐막작 러닝타임에 따라 상영 종료시간이 변경될 수 있습니다.',
+        '레드카펫 행사 시간에 따라 식 시작 시간이 변경될 수 있습니다.',
+      ],
+    },
+  ];
+
   // ---------- map setup ----------
   const map = L.map('map', { zoomControl:false, attributionControl:true }).setView([35.135, 129.078], 12);
   L.control.zoom({ position:'bottomright' }).addTo(map);
@@ -364,48 +666,118 @@
     attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
   }).addTo(map);
 
-  function ticketSection(v){
+  // ---------- small helpers ----------
+  function directionsUrl(lat,lng){
+    return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
+  }
+  const savedSet = new Set();
+
+  // BIFF 2025 현장 매표소 운영(=축제 진행) 기간 기준으로 상태 배지를 계산
+  function festivalStatus(){
+    const start = new Date('2025-09-17T00:00:00');
+    const end   = new Date('2025-09-26T23:59:59');
+    const now   = new Date();
+    if(now < start){
+      const days = Math.ceil((start-now)/86400000);
+      return { text:`D-${days}`, cls:'upcoming' };
+    } else if(now <= end){
+      return { text:'행사중', cls:'live' };
+    }
+    return { text:'종료', cls:'ended' };
+  }
+
+  function hubTicketHTML(v){
     const tb = TICKETBOX[v.id];
     if(!tb) return '';
-    const rows = tb.map(t => `
-      <div class="tb-row">
-        <div class="tb-loc">${t.loc}</div>
-        <div class="tb-meta">${t.period} · ${t.hours} · ${t.pay}</div>
-        ${t.note ? `<div class="tb-note">${t.note}</div>` : ''}
-      </div>
-    `).join('');
-    return `<div class="tb-block"><p class="tb-title">🎫 현장 매표소 운영 (임시)</p>${rows}</div>`;
+    const lines = tb.map(t => `<div>🎫 ${tb.length>1 ? t.loc+' · ' : ''}${t.period} · ${t.hours}</div>`).join('');
+    return `<div class="hub-tb">${lines}</div>`;
   }
 
-  function cafeSection(v){
+  function cafeCarouselHTML(v){
     const cafes = CAFES[v.id];
-    if(!cafes) return '';
     const rows = cafes.map(([name,rating,min]) => `
-      <div class="cafe-row">
-        <span class="cafe-name">${name}</span>
-        <span class="cafe-meta">★${rating.toFixed(1)} · 도보${min}분</span>
+      <div class="cafe-card" data-cafe="${name}">
+        <div class="cc-icon">☕</div>
+        <div class="cc-name">${name}</div>
+        <div class="cc-meta">★${rating.toFixed(1)} · 도보${min}분</div>
       </div>
     `).join('');
-    return `<div class="cafe-block"><p class="cafe-title">☕ 도보 10분 이내 카페 (평점순, 예시)</p>${rows}</div>`;
+    return `
+      <div class="detail-section">
+        <p class="detail-section-title">☕ 도보 10분 이내 카페 (평점순, 예시)</p>
+        <div class="cafe-carousel">${rows}</div>
+      </div>
+    `;
   }
 
-  // ---------- cafe dot markers (shown while a venue popup is open) ----------
+  function poiCarouselHTML(title, type, items){
+    const t = POI_THEME[type];
+    const cards = items.map(p => `
+      <div class="poi-card" data-poi-type="${type}" data-poi-id="${p.id}">
+        <div class="poi-card-icon" style="background:var(${t.colorVar})">${t.icon}</div>
+        <div class="poi-card-name">${p.name}</div>
+        <div class="poi-card-loc">${p.loc}</div>
+      </div>
+    `).join('');
+    return `
+      <div class="detail-section">
+        <p class="detail-section-title">${title}</p>
+        <div class="cafe-carousel">${cards}</div>
+      </div>
+    `;
+  }
+
+  function buildPoiCard(poi, type){
+    const t = POI_THEME[type];
+    return heroHTML(t.themeClass, { icon:t.icon, category:t.category }, poi.name, poi.loc)
+         + `<div class="dc-tabpanel" data-panel="home">
+              <p class="dc-section-h">${t.category} 안내</p>
+              <div class="dc-notice-card">
+                <div class="dc-notice-thumb" style="background:var(${t.colorVar});color:#fff;">${t.icon}</div>
+                <div class="dc-notice-text">
+                  <div>${poi.desc}</div>
+                  <div class="muted">예시 데이터 · 실제 운영 정보 아님</div>
+                </div>
+              </div>
+            </div>`;
+  }
+
+  function openPoiDetail(poi, type){
+    mode = 'detail';
+    panelOuter.classList.add('detail-mode');
+    panelHead.style.display = 'none';
+    panelBody.classList.add('detail-mode');
+    panelBody.innerHTML = buildPoiCard(poi, type);
+    panelBody.scrollTop = 0;
+    panelActionBar.style.display = 'flex';
+    panelActionBar.innerHTML = actionBarHTML(poi.id, poi.lat, poi.lng, poi.district === 'nampo' ? 'comm' : 'main');
+    wireDetailInteractions();
+    setHighlight(poiMarkers[poi.id].getElement().querySelector('.poi-marker'));
+    cafeLayer.clearLayers();
+    map.flyTo([poi.lat, poi.lng], 17, { duration:0.6 });
+  }
+
+  // ---------- cafe dot markers (shown while a detail card is open) ----------
   const cafeLayer = L.layerGroup().addTo(map);
+  const cafeMarkerRefs = {};
   function showCafeDots(v){
     cafeLayer.clearLayers();
+    Object.keys(cafeMarkerRefs).forEach(k => delete cafeMarkerRefs[k]);
     const cafes = CAFES[v.id];
     if(!cafes) return;
     cafes.forEach(([name,rating,min]) => {
       const coord = CAFE_COORDS[name];
       if(!coord) return;
-      L.marker(coord, {
+      const cm = L.marker(coord, {
         icon: L.divIcon({ className:'', html:'<div class="cafe-dot"></div>', iconSize:[26,26], iconAnchor:[13,13] })
       })
       .bindTooltip(`☕ ${name} · ★${rating.toFixed(1)} · 도보${min}분`, { className:'cafe-tooltip', direction:'top', offset:[0,-8] })
       .addTo(cafeLayer);
+      cafeMarkerRefs[name] = cm;
     });
   }
 
+  // ---------- venue markers ----------
   const markers = {};
   VENUES.forEach(v => {
     const hasTicket = !!TICKETBOX[v.id];
@@ -415,23 +787,64 @@
                <div class="venue-marker venue-marker--${v.district}">${v.num}</div>
                ${hasTicket ? '<div class="ticket-pin-badge">🎫</div>' : ''}
              </div>`,
-      iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-14]
+      iconSize:[30,30], iconAnchor:[15,15]
     });
     const m = L.marker([v.lat, v.lng], { icon }).addTo(map);
-    m.bindPopup(`
-      <div class="popup">
-        <span class="district-tag ${v.district}">${DISTRICTS[v.district].label.split(' ')[0]} · ${v.num}</span>
-        <p class="name-kr">${v.kr}</p>
-        <p class="name-en">${v.en}</p>
-        <p class="addr">${v.addr}</p>
-        ${ticketSection(v)}
-        ${cafeSection(v)}
-      </div>
-    `);
-    m.on('popupopen', () => showCafeDots(v));
-    m.on('popupclose', () => cafeLayer.clearLayers());
+    m.on('click', () => openVenueDetail(v));
     markers[v.id] = m;
   });
+
+  // ---------- BIFF main hub point ----------
+  const HUB_COORD = [35.17190, 129.12680]; // 영화의전당 인근, 센텀시티 거점 중심
+  const centumVenues = VENUES.filter(v => v.district === 'centum').sort((a,b)=>a.num-b.num);
+
+  const hubIcon = L.divIcon({
+    className: '',
+    html: `<div class="biff-hub">
+             <div class="biff-hub-label">🎬 부산국제영화제</div>
+             <div class="biff-hub-dot"></div>
+           </div>`,
+    iconSize:[150,64], iconAnchor:[75,50]
+  });
+  const hubMarker = L.marker(HUB_COORD, { icon: hubIcon, zIndexOffset: 500 }).addTo(map);
+  hubMarker.on('click', () => openHubDetail());
+
+  // ---------- Community BIFF sub-hub point (남포동 4곳을 묶는 심볼) ----------
+  const commHubIcon = L.divIcon({
+    className: '',
+    html: `<div class="comm-hub">
+             <div class="comm-hub-label">🎪 커뮤니티비프</div>
+             <div class="comm-hub-dot"></div>
+           </div>`,
+    iconSize:[150,64], iconAnchor:[75,50]
+  });
+  const commHubMarker = L.marker(COMM_HUB_COORD, { icon: commHubIcon, zIndexOffset: 480 }).addTo(map);
+  commHubMarker.on('click', () => openCommHubDetail());
+
+  // ---------- supplementary POI markers (오픈토크 / 굿즈샵 / 포토존) ----------
+  const poiMarkers = {};
+  function makePoiMarker(poi, type){
+    const t = POI_THEME[type];
+    const icon = L.divIcon({
+      className: '',
+      html: `<div class="poi-marker poi-marker--${type}">${t.icon}</div>`,
+      iconSize:[30,30], iconAnchor:[15,15]
+    });
+    const m = L.marker([poi.lat, poi.lng], { icon }).addTo(map);
+    m.on('click', () => openPoiDetail(poi, type));
+    poiMarkers[poi.id] = m;
+  }
+  OPENTALK.forEach(p => makePoiMarker(p, 'opentalk'));
+  GOODS.forEach(p => makePoiMarker(p, 'goods'));
+  PHOTOZONE.forEach(p => makePoiMarker(p, 'photo'));
+
+  // ---------- selection highlight ----------
+  let highlightedEl = null;
+  function setHighlight(el){
+    if(highlightedEl) highlightedEl.classList.remove('selected-ring');
+    highlightedEl = el || null;
+    if(highlightedEl) highlightedEl.classList.add('selected-ring');
+  }
 
   // ---------- distance badge ----------
   function centroid(list){
@@ -457,20 +870,355 @@
   }
   function boundsFor(district, ticketOnly){
     const list = visibleList(district, ticketOnly);
-    return L.latLngBounds((list.length?list:VENUES).map(v=>[v.lat,v.lng]));
+    let coords = (list.length?list:VENUES).map(v=>[v.lat,v.lng]);
+    if(district === 'all'){
+      coords = coords.concat([...OPENTALK, ...GOODS, ...PHOTOZONE].map(p=>[p.lat,p.lng]));
+    }
+    return L.latLngBounds(coords);
   }
 
-  // ---------- panel ----------
-  const panelList = document.getElementById('panelList');
-  const panelTitle = document.getElementById('panelTitle');
-  const panelCount = document.getElementById('panelCount');
+  // ---------- panel: shared refs + state ----------
+  const panelOuter = document.getElementById('panelOuter');
+  const panelHead = document.getElementById('panelHead');
+  const panelBody = document.getElementById('panelBody');
+  const panelActionBar = document.getElementById('panelActionBar');
+  let currentDistrict = 'all';
+  let ticketOnly = false;
+  let mode = 'list';
 
-  function renderPanel(district, ticketOnly){
-    const list = visibleList(district, ticketOnly);
-    const districtLabel = district==='all' ? '전체' : DISTRICTS[district].label.split(' ')[0];
-    panelTitle.textContent = ticketOnly ? districtLabel+' · 매표소 운영' : districtLabel+' 행사장';
-    panelCount.textContent = list.length+'곳';
-    panelList.innerHTML = list.map(v=>`
+  // ---- shared card pieces ----
+  function posterHTML(meta){
+    return `<div class="dc-poster"><span class="dc-poster-icon">${meta.icon}</span><span class="dc-poster-cat">${meta.category}</span></div>`;
+  }
+  function heroHTML(themeClass, meta, titleKr, locText, dateText){
+    const status = festivalStatus();
+    return `
+      <div class="dc-hero ${themeClass}">
+        <div class="dc-handle"></div>
+        <button class="dc-close">✕</button>
+        ${posterHTML(meta)}
+        <div class="dc-status-pill ${status.cls}">${status.text}</div>
+        <p class="dc-title">${titleKr}</p>
+        <p class="dc-date">${dateText || '2025.09.17. ~ 2025.09.26.'}</p>
+        <p class="dc-loc-row">📍 ${locText}</p>
+      </div>
+    `;
+  }
+  function tabsHTML(){
+    return `
+      <div class="dc-tabs">
+        <button class="dc-tab active" data-tab="home">홈</button>
+        <button class="dc-tab" data-tab="talk">현장톡</button>
+        <button class="dc-tab" data-tab="photo">사진</button>
+        <button class="dc-tab" data-tab="blog">블로그</button>
+      </div>
+    `;
+  }
+  function placeholderHTML(key, name, icon){
+    return `
+      <div class="dc-tabpanel" data-panel="${key}" hidden>
+        <div class="dc-placeholder"><span class="ph-icon">${icon}</span>이 데모에는 ${name} 화면이 준비되어 있지 않아요</div>
+      </div>
+    `;
+  }
+  function actionBarHTML(id, lat, lng, ctaTarget){
+    const saved = savedSet.has(String(id));
+    let cta;
+    if(ctaTarget === 'directions'){
+      cta = `<a class="dc-cta" href="${directionsUrl(lat,lng)}" target="_blank" rel="noopener">📍 길찾기</a>`;
+    } else if(ctaTarget === 'comm'){
+      cta = `<button class="dc-cta" data-open-comm="1">🎪 커뮤니티비프</button>`;
+    } else {
+      cta = `<button class="dc-cta" data-open-hub="1">🎬 부산국제영화제</button>`;
+    }
+    return `
+      <button class="dc-icon-btn save-btn ${saved?'saved':''}" data-save-id="${id}" title="저장">${saved?'✓':'🔖'}</button>
+      <button class="dc-icon-btn zoom-btn" data-lat="${lat}" data-lng="${lng}" title="확대보기">🔍</button>
+      <a class="dc-icon-btn" href="${directionsUrl(lat,lng)}" target="_blank" rel="noopener" title="길찾기">📍</a>
+      ${cta}
+    `;
+  }
+
+  // ---- venue card ----
+  function homeTabHTML_venue(v){
+    const meta = VENUE_META[v.id];
+    const tb = TICKETBOX[v.id];
+    const noticeLines = tb
+      ? tb.map(t => `<div>🎫 ${tb.length>1 ? t.loc+' · ' : ''}${t.period} · ${t.hours}</div>`).join('')
+      : `<div>이 행사장은 별도 매표소 없이 운영돼요</div>`;
+    const extra = tb
+      ? `<div class="dc-extra" hidden>${tb.map(t => `<div>결제 : ${t.pay}${t.note ? ' · '+t.note : ''}</div>`).join('')}</div>`
+      : '';
+    const a11yLine = tb ? `<div class="a11y-line">♿ 디지털 취약계층 우선 현장예매 좌석 일부 운영 (예시)</div>` : '';
+    return `
+      <div class="dc-tabpanel" data-panel="home">
+        <p class="dc-section-h">공지사항</p>
+        <div class="dc-notice-card">
+          <div class="dc-notice-thumb">${meta.icon}</div>
+          <div class="dc-notice-text">
+            <div>개최기간 : 9/17(수)~9/26(금)</div>
+            ${noticeLines}
+            ${a11yLine}
+            <div class="muted">2025.06.24. 업데이트 · 예시 데이터</div>
+          </div>
+        </div>
+        ${extra}
+        ${tb ? `<div class="dc-expand-row"><button class="dc-expand-btn">펼치기 ⌄</button></div>` : ''}
+
+        <div class="detail-section">
+          <p class="detail-section-title">📍 위치</p>
+          <div class="info-row"><span class="icon">·</span><span>${v.addr}</span></div>
+        </div>
+
+        ${CAFES[v.id] ? cafeCarouselHTML(v) : ''}
+        ${GOODS.filter(g=>g.district===v.district).length ? poiCarouselHTML('🛍️ 근처 굿즈샵 (예시)', 'goods', GOODS.filter(g=>g.district===v.district)) : ''}
+        ${PHOTOZONE.filter(p=>p.district===v.district).length ? poiCarouselHTML('📸 근처 포토존 (예시)', 'photo', PHOTOZONE.filter(p=>p.district===v.district)) : ''}
+      </div>
+    `;
+  }
+  function buildVenueCard(v){
+    const meta = VENUE_META[v.id];
+    const themeClass = v.district === 'nampo' ? 'theme-nampo' : 'theme-centum';
+    return heroHTML(themeClass, meta, v.kr, v.addr)
+         + tabsHTML()
+         + homeTabHTML_venue(v)
+         + placeholderHTML('talk','현장톡','💬')
+         + placeholderHTML('photo','사진','🖼️')
+         + placeholderHTML('blog','블로그','✍️');
+  }
+
+  // ---- BIFF hub card ----
+  function eventsCardHTML(){
+    return EVENTS.map(ev => {
+      const steps = ev.steps.map(s => `
+        <div class="evt-step">
+          <div class="evt-time">${s.time}</div>
+          <div class="evt-step-label">${s.label}</div>
+        </div>
+      `).join('');
+      const notes = ev.notes.map(n => `<div>· ${n}</div>`).join('');
+      return `
+        <div class="detail-section">
+          <p class="detail-section-title">📅 오늘의 이벤트</p>
+          <div class="evt-card">
+            <div class="evt-head">
+              <span class="evt-date">${ev.date}</span>
+              <span class="evt-label">${ev.label}</span>
+            </div>
+            <div class="evt-steps">${steps}</div>
+            <div class="evt-notes">${notes}</div>
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function homeTabHTML_hub(){
+    const rows = centumVenues.map(v => `
+      <div class="hub-row" data-id="${v.id}">
+        <div class="hub-num">${v.num}</div>
+        <div>
+          <div class="hub-name-kr">${v.kr}</div>
+          <div class="hub-name-en">${v.en}</div>
+          ${hubTicketHTML(v)}
+        </div>
+      </div>
+    `).join('');
+    return `
+      <div class="dc-tabpanel" data-panel="home">
+        <p class="dc-section-h">공지사항</p>
+        <div class="dc-notice-card">
+          <div class="dc-notice-thumb">🎬</div>
+          <div class="dc-notice-text">
+            <div>개최기간 : 9/17(수)~9/26(금)</div>
+            <div>남포동 · 센텀시티 11개 행사장에서 동시 진행</div>
+            <div class="muted">2025.06.24. 업데이트 · 예시 데이터</div>
+          </div>
+        </div>
+        ${eventsCardHTML()}
+        <div class="detail-section">
+          <p class="detail-section-title">🎞 센텀시티 상영관 ${centumVenues.length}곳</p>
+          <div class="hub-list">${rows}</div>
+        </div>
+        ${poiCarouselHTML('🎙️ 오픈토크 (예시)', 'opentalk', OPENTALK)}
+        ${poiCarouselHTML('🛍️ 굿즈샵 (예시)', 'goods', GOODS)}
+        ${poiCarouselHTML('📸 포토존 (예시)', 'photo', PHOTOZONE)}
+      </div>
+    `;
+  }
+  function buildHubCard(){
+    return heroHTML('theme-hub', { icon:'🎬', category:'메인 포인트' }, '🎬 부산국제영화제', '센텀시티 일대')
+         + tabsHTML()
+         + homeTabHTML_hub()
+         + placeholderHTML('talk','현장톡','💬')
+         + placeholderHTML('photo','사진','🖼️')
+         + placeholderHTML('blog','블로그','✍️');
+  }
+
+  // ---- Community BIFF sub-hub card (남포동 4곳을 묶는 카드) ----
+  function homeTabHTML_comm(){
+    const rows = nampoVenues.map(v => `
+      <div class="hub-row" data-id="${v.id}">
+        <div class="hub-num">${v.num}</div>
+        <div>
+          <div class="hub-name-kr">${v.kr}</div>
+          <div class="hub-name-en">${v.en}</div>
+          ${hubTicketHTML(v)}
+        </div>
+      </div>
+    `).join('');
+    const chips = COMMUNITY_PROGRAMS.map(p => `<span class="prog-chip">${p}</span>`).join('');
+    return `
+      <div class="dc-tabpanel" data-panel="home">
+        <p class="dc-section-h">공지사항</p>
+        <div class="dc-notice-card">
+          <div class="dc-notice-thumb" style="background:var(--nampo-soft);">🎪</div>
+          <div class="dc-notice-text">
+            <div>개최기간 : 9/18(목)~9/21(일)</div>
+            <div>관객참여형 축제 ‘Made by Audience’ · 남포동 4개 행사장에서 진행</div>
+            <div class="muted">2025.06.24. 업데이트 · 예시 데이터</div>
+          </div>
+        </div>
+        <div class="prog-chip-row">${chips}</div>
+        <div class="detail-section">
+          <p class="detail-section-title">📍 남포동 행사장 ${nampoVenues.length}곳</p>
+          <div class="hub-list">${rows}</div>
+        </div>
+      </div>
+    `;
+  }
+  function buildCommHubCard(){
+    return heroHTML('theme-nampo', { icon:'🎪', category:'서브 허브' }, '🎪 커뮤니티비프', '남포동 일대', '2025.09.18. ~ 2025.09.21.')
+         + tabsHTML()
+         + homeTabHTML_comm()
+         + placeholderHTML('talk','현장톡','💬')
+         + placeholderHTML('photo','사진','🖼️')
+         + placeholderHTML('blog','블로그','✍️');
+  }
+
+  // ---- shared interaction wiring for any open detail card ----
+  function wireDetailInteractions(){
+    const closeBtn = panelBody.querySelector('.dc-close');
+    if(closeBtn) closeBtn.addEventListener('click', showList);
+
+    panelBody.querySelectorAll('.dc-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        panelBody.querySelectorAll('.dc-tab').forEach(t => t.classList.toggle('active', t===tab));
+        panelBody.querySelectorAll('.dc-tabpanel').forEach(p => { p.hidden = p.dataset.panel !== tab.dataset.tab; });
+      });
+    });
+
+    const expandBtn = panelBody.querySelector('.dc-expand-btn');
+    if(expandBtn){
+      expandBtn.addEventListener('click', () => {
+        const extra = panelBody.querySelector('.dc-extra');
+        if(!extra) return;
+        const willShow = !!extra.hidden;
+        extra.hidden = !willShow;
+        expandBtn.textContent = willShow ? '접기 ︿' : '펼치기 ⌄';
+      });
+    }
+
+    panelBody.querySelectorAll('.cafe-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const cm = cafeMarkerRefs[card.dataset.cafe];
+        if(cm){ map.flyTo(cm.getLatLng(), 18, { duration:0.5 }); cm.openTooltip(); }
+      });
+    });
+    panelBody.querySelectorAll('.hub-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const v = VENUES.find(x => x.id == row.dataset.id);
+        openVenueDetail(v);
+      });
+    });
+    panelBody.querySelectorAll('.poi-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const type = card.dataset.poiType;
+        const arr = type==='opentalk' ? OPENTALK : type==='goods' ? GOODS : PHOTOZONE;
+        const poi = arr.find(p => p.id === card.dataset.poiId);
+        if(poi) openPoiDetail(poi, type);
+      });
+    });
+
+    const saveBtn = panelActionBar.querySelector('.save-btn');
+    if(saveBtn){
+      saveBtn.addEventListener('click', () => {
+        const id = saveBtn.dataset.saveId;
+        if(savedSet.has(id)) savedSet.delete(id); else savedSet.add(id);
+        const nowSaved = savedSet.has(id);
+        saveBtn.classList.toggle('saved', nowSaved);
+        saveBtn.textContent = nowSaved ? '✓' : '🔖';
+      });
+    }
+    const zoomBtn = panelActionBar.querySelector('.zoom-btn');
+    if(zoomBtn){
+      zoomBtn.addEventListener('click', () => {
+        map.flyTo([parseFloat(zoomBtn.dataset.lat), parseFloat(zoomBtn.dataset.lng)], 19, { duration:0.5 });
+      });
+    }
+    const ctaBtn = panelActionBar.querySelector('[data-open-hub]');
+    if(ctaBtn) ctaBtn.addEventListener('click', openHubDetail);
+    const commCtaBtn = panelActionBar.querySelector('[data-open-comm]');
+    if(commCtaBtn) commCtaBtn.addEventListener('click', openCommHubDetail);
+  }
+
+  function openVenueDetail(v){
+    mode = 'detail';
+    panelOuter.classList.add('detail-mode');
+    panelHead.style.display = 'none';
+    panelBody.classList.add('detail-mode');
+    panelBody.innerHTML = buildVenueCard(v);
+    panelBody.scrollTop = 0;
+    panelActionBar.style.display = 'flex';
+    panelActionBar.innerHTML = actionBarHTML(v.id, v.lat, v.lng, v.district === 'nampo' ? 'comm' : 'main');
+    wireDetailInteractions();
+    setHighlight(markers[v.id].getElement().querySelector('.venue-marker'));
+    showCafeDots(v);
+    map.flyTo([v.lat, v.lng], 17, { duration:0.6 });
+  }
+
+  function openHubDetail(){
+    mode = 'detail';
+    panelOuter.classList.add('detail-mode');
+    panelHead.style.display = 'none';
+    panelBody.classList.add('detail-mode');
+    panelBody.innerHTML = buildHubCard();
+    panelBody.scrollTop = 0;
+    panelActionBar.style.display = 'flex';
+    panelActionBar.innerHTML = actionBarHTML('hub', HUB_COORD[0], HUB_COORD[1], 'directions');
+    wireDetailInteractions();
+    setHighlight(hubMarker.getElement().querySelector('.biff-hub-dot'));
+    cafeLayer.clearLayers();
+    map.flyTo(HUB_COORD, 16, { duration:0.6 });
+  }
+
+  function openCommHubDetail(){
+    mode = 'detail';
+    panelOuter.classList.add('detail-mode');
+    panelHead.style.display = 'none';
+    panelBody.classList.add('detail-mode');
+    panelBody.innerHTML = buildCommHubCard();
+    panelBody.scrollTop = 0;
+    panelActionBar.style.display = 'flex';
+    panelActionBar.innerHTML = actionBarHTML('comm-hub', COMM_HUB_COORD[0], COMM_HUB_COORD[1], 'main');
+    wireDetailInteractions();
+    setHighlight(commHubMarker.getElement().querySelector('.comm-hub-dot'));
+    cafeLayer.clearLayers();
+    map.flyTo(COMM_HUB_COORD, 16, { duration:0.6 });
+  }
+
+  // ---- list view ----
+  function renderListHeader(){
+    const list = visibleList(currentDistrict, ticketOnly);
+    const districtLabel = currentDistrict === 'all' ? '전체' : DISTRICTS[currentDistrict].label.split(' ')[0];
+    const title = ticketOnly ? districtLabel+' · 매표소 운영' : districtLabel+' 행사장';
+    panelHead.style.display = 'flex';
+    panelHead.innerHTML = `<span>${title}</span><span class="count">${list.length}곳</span>`;
+  }
+  function renderListBody(){
+    const list = visibleList(currentDistrict, ticketOnly);
+    panelBody.classList.remove('detail-mode');
+    panelBody.innerHTML = list.map(v => `
       <div class="venue-row" data-district="${v.district}" data-id="${v.id}">
         <div class="venue-num">${v.num}</div>
         <div>
@@ -479,23 +1227,31 @@
         </div>
       </div>
     `).join('');
-    panelList.querySelectorAll('.venue-row').forEach(row=>{
-      row.addEventListener('click', ()=>{
-        const v = VENUES.find(x=>x.id==row.dataset.id);
-        map.flyTo([v.lat,v.lng], 17, { duration:0.6 });
-        markers[v.id].openPopup();
+    panelBody.querySelectorAll('.venue-row').forEach(row => {
+      row.addEventListener('click', () => {
+        const v = VENUES.find(x => x.id == row.dataset.id);
+        openVenueDetail(v);
       });
     });
+  }
+  function showList(){
+    mode = 'list';
+    cafeLayer.clearLayers();
+    setHighlight(null);
+    panelOuter.classList.remove('detail-mode');
+    panelBody.classList.remove('detail-mode');
+    panelActionBar.style.display = 'none';
+    panelActionBar.innerHTML = '';
+    renderListHeader();
+    renderListBody();
   }
 
   // ---------- toggle ----------
   const toggleBtns = document.querySelectorAll('.toggle button');
   const ticketToggleEl = document.getElementById('ticketToggle');
-  let currentDistrict = 'all';
-  let ticketOnly = false;
 
   function applyView(){
-    VENUES.forEach(v=>{
+    VENUES.forEach(v => {
       const el = markers[v.id].getElement();
       if(!el) return;
       const wrap = el.querySelector('.venue-marker-wrap');
@@ -504,13 +1260,38 @@
                        && (!ticketOnly || TICKETBOX[v.id]);
       wrap.classList.toggle('dim', !matches);
     });
-    renderPanel(currentDistrict, ticketOnly);
+    const hubEl = hubMarker.getElement();
+    if(hubEl){
+      const hubWrap = hubEl.querySelector('.biff-hub');
+      if(hubWrap) hubWrap.classList.toggle('dim', currentDistrict==='nampo' || ticketOnly);
+    }
+    const commHubEl = commHubMarker.getElement();
+    if(commHubEl){
+      const commWrap = commHubEl.querySelector('.comm-hub');
+      if(commWrap) commWrap.classList.toggle('dim', currentDistrict==='centum' || ticketOnly);
+    }
+    [...GOODS, ...PHOTOZONE].forEach(p => {
+      const el = poiMarkers[p.id].getElement();
+      if(!el) return;
+      const inner = el.querySelector('.poi-marker');
+      if(!inner) return;
+      const districtOk = !p.district || currentDistrict==='all' || p.district===currentDistrict;
+      inner.classList.toggle('dim', !districtOk || ticketOnly);
+    });
+    OPENTALK.forEach(p => {
+      const el = poiMarkers[p.id].getElement();
+      if(!el) return;
+      const inner = el.querySelector('.poi-marker');
+      if(!inner) return;
+      inner.classList.toggle('dim', ticketOnly);
+    });
+    showList();
     map.flyToBounds(boundsFor(currentDistrict, ticketOnly), { padding:[80,80], duration:0.7, maxZoom:16 });
   }
 
   toggleBtns.forEach(b => b.addEventListener('click', () => {
     currentDistrict = b.dataset.d;
-    toggleBtns.forEach(x=>x.classList.toggle('active', x===b));
+    toggleBtns.forEach(x => x.classList.toggle('active', x===b));
     applyView();
   }));
 
